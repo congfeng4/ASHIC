@@ -1,6 +1,6 @@
 import os
 import click
-import cPickle as pickle
+import pickle as pickle
 import numpy as np
 from ashic.misc.zipgamma import estimate_gamma
 

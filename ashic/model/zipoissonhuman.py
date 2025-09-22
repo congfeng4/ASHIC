@@ -143,11 +143,11 @@ class ZeroInflatedPoissonHuman(BaseModel):
             try:
                 self.x = np.array(params['x'], dtype=float).reshape((self.n * 2, 3))
             except ValueError:
-                print "Chromosome structure size does not match bin-size! Should be (N * 2, 3)."
+                print("Chromosome structure size does not match bin-size! Should be (N * 2, 3).")
                 raise
         else:
             self.x = 1 - 2 * random_state.rand(self.n * 2, 3)
-            print "No initial chromosome structure provided! Initialize with random instead."
+            print("No initial chromosome structure provided! Initialize with random instead.")
         # check if p is provided, otherwise calculate in later step (only calculate once)
         if params.get('p', None) is not None:
             self.p = np.array(params['p'], dtype=float).flatten()
@@ -155,7 +155,7 @@ class ZeroInflatedPoissonHuman(BaseModel):
                 "Assignable probabilities size does not match bin-size! Should be (N)."
         else:
             self.p = None
-            print "No assignable probabilities provided! Will calculated using observed data."
+            print("No assignable probabilities provided! Will calculated using observed data.")
         # check if gamma is provided, otherwise initial with random, size = N (N-1 intra and 1 inter)
         if params.get('gamma', None) is not None:
             gamma = np.array(params['gamma'], dtype=float).flatten()
@@ -170,13 +170,13 @@ class ZeroInflatedPoissonHuman(BaseModel):
             self.gamma[:self.merge-1] = random_state.uniform(0.9, 1, self.merge-1)
             self.gamma[self.merge-1:-1] = random_state.uniform(0.9, 1, 1)
             self.gamma[-1] = random_state.uniform(0.9, 1, 1)
-            print "No initial gamma values provided! Initialize with random instead."
+            print("No initial gamma values provided! Initialize with random instead.")
         # check if bias is provided, otherwise initialize with ones
         if not self.normalize:
             self.bias = np.ones(self.n * 2, dtype=float)
         elif params.get('bias', None) is None:
             self.bias = np.ones(self.n * 2, dtype=float)
-            print "No bias provided! Initialize with ones instead."
+            print("No bias provided! Initialize with ones instead.")
         else:
             self.bias = np.array(params['bias'], dtype=float).flatten()
             assert self.bias.shape[0] == self.n * 2, \
@@ -187,7 +187,7 @@ class ZeroInflatedPoissonHuman(BaseModel):
                 "Valid loci size does not match bin-size! Should be (N)."
         else:
             self.loci = np.ones(self.n, dtype=bool)
-            print "No valid loci provided! Will use all loci."
+            print("No valid loci provided! Will use all loci.")
         # use only the upper traingle and exclude unmappable loci
         assert (diag >= 0) and (diag < self.n - 1), "Exclude diags should be [0, N - 1) !"
         self.diag = diag
@@ -240,7 +240,7 @@ class ZeroInflatedPoissonHuman(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         p1, p2, p3, p4 = multinomial_p(self.p, mask=self.mask)
         # masked observed data
         oaa, oab, oba, obb = data['aa'][self.mask], data['ab'][self.mask], data['ba'][self.mask], data['bb'][self.mask]
@@ -260,11 +260,11 @@ class ZeroInflatedPoissonHuman(BaseModel):
             # ztuple = zaa(0), zab(1), zba(2), zbb(3)
             f = 0  # log f(obs|z) * f(z) for a given z assignment
             # log f(z) = z * log(g) + (1-z) * log(1-g)
-            for z, log_g, log_ng in itertools.izip(ztuple, log_gs, log_ngs):
+            for z, log_g, log_ng in zip(ztuple, log_gs, log_ngs):
                 f += log_g if z == 1 else log_ng
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
-            for z, lmd, obs in itertools.izip(ztuple,
+            for z, lmd, obs in zip(ztuple,
                                               (laa, lab, lba, lbb),
                                               (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
@@ -292,7 +292,7 @@ class ZeroInflatedPoissonHuman(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         p1, p2, p3, p4 = multinomial_p(self.p, mask=self.mask)
         # masked observed data
         oaa, oab, oba, obb = data['aa'][self.mask], data['ab'][self.mask], data['ba'][self.mask], data['bb'][self.mask]
@@ -312,11 +312,11 @@ class ZeroInflatedPoissonHuman(BaseModel):
             # ztuple = zaa(0), zab(1), zba(2), zbb(3)
             f = 0  # log f(obs|z) * f(z) for a given z assignment
             # log f(z) = z * log(g) + (1-z) * log(1-g)
-            for z, log_g, log_ng in itertools.izip(ztuple, log_gs, log_ngs):
+            for z, log_g, log_ng in zip(ztuple, log_gs, log_ngs):
                 f += log_g if z == 1 else log_ng
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
-            for z, lmd, obs in itertools.izip((ztuple[0], ztuple[3]),
+            for z, lmd, obs in zip((ztuple[0], ztuple[3]),
                                               (laa, lbb),
                                               (oaa, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
@@ -345,7 +345,7 @@ class ZeroInflatedPoissonHuman(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         z, zt = expected
         # form zaa,zbb matrix so we can extract diagonal
         # NOTE could use slicing to save memory, but leave it for now
@@ -425,7 +425,7 @@ class ZeroInflatedPoissonHuman(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         p1, p2, p3, p4 = multinomial_p(self.p, mask=self.mask)
         # masked observed data
         oaa, oab, oba, obb = data['aa'][self.mask], data['ab'][self.mask], data['ba'][self.mask], data['bb'][self.mask]
@@ -451,11 +451,11 @@ class ZeroInflatedPoissonHuman(BaseModel):
             # ztuple = zaa(0), zab(1), zba(2), zbb(3)
             f = 0  # log f(obs|z) * f(z) for a given z assignment
             # log f(z) = z * log(g) + (1-z) * log(1-g)
-            for z, log_g, log_ng in itertools.izip(ztuple, log_gs, log_ngs):
+            for z, log_g, log_ng in zip(ztuple, log_gs, log_ngs):
                 f += log_g if z == 1 else log_ng
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
-            for z, lmd, obs in itertools.izip(ztuple,
+            for z, lmd, obs in zip(ztuple,
                                               (laa, lab, lba, lbb),
                                               (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)

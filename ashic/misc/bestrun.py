@@ -6,7 +6,7 @@ import os
 import json
 import click
 import numpy as np
-import cPickle as pickle
+import pickle as pickle
 from ashic.model.poisson import Poisson
 from ashic.model.zipoissonhuman import ZeroInflatedPoissonHuman
 

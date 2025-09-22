@@ -20,7 +20,7 @@ import subprocess
 import collections
 import numpy as np
 from glob import glob
-import cPickle as pickle
+import pickle as pickle
 import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt
@@ -206,7 +206,7 @@ def split_chroms(filename, outputdir, prefix, mat, pat, amb,
 					), 'w')
 				files[(chr1_, suffix)].write(line)
 	finally:
-		for fh in files.values():
+		for fh in list(files.values()):
 			fh.close()
 	
 
@@ -527,7 +527,7 @@ def prepare_data(datadir, outputdir, prefix, diag, perc, filter_on, mat, pat, am
 			prefix = os.path.splitext(prefix)[0]
 		obs[f[a1]+f[a2]] = np.load(file[0])
 		if len(file) > 1:
-			print "Merge {} files together...".format(len(file))
+			print("Merge {} files together...".format(len(file)))
 			for nextfile in file[1:]:
 				obs[f[a1]+f[a2]] += np.load(nextfile)
 		if a1 != a2: 

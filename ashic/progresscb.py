@@ -11,10 +11,10 @@ from ashic.misc import plot3d
 
 
 def basic_callback(i, model, loglikehood, expected):
-    print "{name}: iteration {i} (observed log-likelihood={ll})".format(
+    print("{name}: iteration {i} (observed log-likelihood={ll})".format(
         name=model.name,
         i=i,
-        ll=loglikehood)
+        ll=loglikehood))
 
 
 class BasicCallback(object):

@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import euclidean_distances
 from ashic import structure
 from sklearn.utils import check_random_state
-from utils import naneuclidean_distances, form_alphamatrix, mask_diagonals
+from .utils import naneuclidean_distances, form_alphamatrix, mask_diagonals
 
 
 def sample_same_structure(x, y):
@@ -46,7 +46,7 @@ class Simulation(object):
         try:
             self.params['x'] = np.array(params['x'], dtype=float).reshape((self.params['n'] * 2, 3))
         except ValueError:
-            print "Chromosome structure size does not match bin-size! Should be (N * 2, 3)."
+            print("Chromosome structure size does not match bin-size! Should be (N * 2, 3).")
             raise
         self.params['gamma'] = np.array(params['gamma']).flatten()
         assert self.params['gamma'].shape[0] == self.params['n'], "Gamma size should be N."
@@ -164,7 +164,7 @@ class SimulationHuman(object):
         try:
             self.params['x'] = np.array(params['x'], dtype=float).reshape((self.params['n'] * 2, 3))
         except ValueError:
-            print "Chromosome structure size does not match bin-size! Should be (N * 2, 3)."
+            print("Chromosome structure size does not match bin-size! Should be (N * 2, 3).")
             raise
         self.params['gamma'] = np.array(params['gamma']).flatten()
         assert self.params['gamma'].shape[0] == self.params['n'], "Gamma size should be N."

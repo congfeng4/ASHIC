@@ -67,7 +67,7 @@ def get_localinds(n, percentile=0.2, fragment_size=5):
         if i < nfragments - 1:
             s = max(0, center-int(fragment_size/2))
             e = min(s+fragment_size, n)
-            localinds.extend(range(s, e))
+            localinds.extend(list(range(s, e)))
             center += centerdis
         else:
             if length % fragment_size == 0:
@@ -76,7 +76,7 @@ def get_localinds(n, percentile=0.2, fragment_size=5):
                 end = length % fragment_size
             s = max(0, center-int(fragment_size/2))
             e = min(s+end, n)
-            localinds.extend(range(s, e))
+            localinds.extend(list(range(s, e)))
     return localinds
 
 
@@ -89,7 +89,7 @@ def parse_localinds(indstr):
     for rg in indstr.split(','):
         start, end = rg.split('-')
         start, end = int(start), int(end)
-        localinds.extend(range(start, end+1))
+        localinds.extend(list(range(start, end+1)))
     return localinds
 
 

@@ -1,9 +1,7 @@
 import abc
 
 
-class BaseModel(object):
-    __metaclass__ = abc.ABCMeta
-
+class BaseModel(object, metaclass=abc.ABCMeta):
     def __init__(self, name):
         self.name = name
 

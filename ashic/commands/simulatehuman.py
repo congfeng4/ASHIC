@@ -12,7 +12,7 @@ from ashic.misc import estimateparams
 from ashic.utils import init_counts, join_matrix, mask_diagonals
 from ashic.optimization import rmds
 from ashic.misc import plot3d
-import cPickle as pickle
+import pickle as pickle
 import iced
 from time import time
 from datetime import timedelta

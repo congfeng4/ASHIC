@@ -181,8 +181,7 @@ def f_grad(R, *params):
     grad_xp = -tmp * (dif * Rdot(gRXp, RYp, RZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(axis=2)
     grad_yp = -tmp * (dif * Rdot(RXp, gRYp, RZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(axis=2)
     grad_zp = -tmp * (dif * Rdot(RXp, RYp, gRZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(axis=2)
-    return np.array(map(lambda x: x[np.invert(np.isnan(distances) | (distances == 0))].sum(),
-                        (grad_xm, grad_ym, grad_zm, grad_xp, grad_yp, grad_zp)))
+    return np.array([x[np.invert(np.isnan(distances) | (distances == 0))].sum() for x in (grad_xm, grad_ym, grad_zm, grad_xp, grad_yp, grad_zp)])
 
 
 def combine_X(counts, iniX, iniY, alpha=-3., beta=1., loci=None, verbose=0, random_state=None):

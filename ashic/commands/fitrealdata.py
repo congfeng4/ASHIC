@@ -12,7 +12,7 @@ from ashic.progresscb import BasicCallback
 from ashic.utils import init_counts, join_matrix
 from ashic.optimization import rmds
 from ashic.misc import plot3d
-import cPickle as pickle
+import pickle as pickle
 import iced
 # from time import time
 # from datetime import timedelta
@@ -69,7 +69,7 @@ def run_ashic(inputfile, outputdir, model_type,
                 init_gamma = float(init_gamma)
                 init['gamma'] = np.full(init['n'], init_gamma, dtype=float)
             except ValueError:
-                print "init_gamma should either be a file or a single value."
+                print("init_gamma should either be a file or a single value.")
     # initialize x as ranom, MDS or from given file
     if init_x == 'random':
         init['x'] = None

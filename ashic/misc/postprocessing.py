@@ -3,7 +3,7 @@ Collections of utils to post-processing outputs
 """
 import os
 import json
-import cPickle as pickle
+import pickle as pickle
 import numpy as np
 from ashic.model.zipoissonhuman import ZeroInflatedPoissonHuman
 from ashic.model.poisson import Poisson
@@ -54,7 +54,7 @@ def find_opt_run(output_dir, rs=0, nrun=10, modeltype='ziphuman', method='ll'):
     :return:
     """
     opt_dir = os.path.join(output_dir, 'opt_run')
-    dir_list = [os.path.join(output_dir, 'run_{}'.format(i)) for i in xrange(rs, rs+nrun)]
+    dir_list = [os.path.join(output_dir, 'run_{}'.format(i)) for i in range(rs, rs+nrun)]
     with open(os.path.join(dir_list[0], 'result.json'), 'r') as fh:
         with open(json.load(fh)['pickle_filepath'], 'rb') as fr:
             data = pickle.load(fr)

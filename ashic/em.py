@@ -17,7 +17,7 @@ def emfit(model, data, maxiter=20, tol=1e-4, callback=basic_callback, **kwargs):
         loglikelihood = model.log_likelihood(data)
         # check if obs likelihood decrease
         if loglikelihood < loglikelihoods[-1]:
-            print "observed log-likelihood decreased at iteration {}.".format(i)
+            print("observed log-likelihood decreased at iteration {}.".format(i))
             break
         i += 1
         if abs(loglikelihood - loglikelihoods[-1]) / abs(loglikelihoods[-1]) <= tol:

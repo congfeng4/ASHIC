@@ -33,11 +33,11 @@ class Poisson(BaseModel):
             try:
                 self.x = np.array(params['x'], dtype=float).reshape((self.n * 2, 3))
             except ValueError:
-                print "Chromosome structure size does not match bin-size! Should be (N * 2, 3)."
+                print("Chromosome structure size does not match bin-size! Should be (N * 2, 3).")
                 raise
         else:
             self.x = 1 - 2 * random_state.rand(self.n * 2, 3)
-            print "No initial chromosome structure provided! Initialize with random instead."
+            print("No initial chromosome structure provided! Initialize with random instead.")
         # check if p is provided, otherwise calculate in later step (only calculate once)
         if params.get('p', None) is not None:
             self.p = np.array(params['p'], dtype=float).flatten()
@@ -45,13 +45,13 @@ class Poisson(BaseModel):
                 "Assignable probabilities size does not match bin-size! Should be (N)."
         else:
             self.p = None
-            print "No assignable probabilities provided! Will calculated using observed data."
+            print("No assignable probabilities provided! Will calculated using observed data.")
         # check if bias is provided, otherwise initialize with ones
         if not self.normalize:
             self.bias = np.ones(self.n * 2, dtype=float)
         elif params.get('bias', None) is None:
             self.bias = np.ones(self.n * 2, dtype=float)
-            print "No bias provided! Initialize with ones instead."
+            print("No bias provided! Initialize with ones instead.")
         else:
             self.bias = np.array(params['bias'], dtype=float).flatten()
             assert self.bias.shape[0] == self.n * 2, \
@@ -62,7 +62,7 @@ class Poisson(BaseModel):
                 "Valid loci size does not match bin-size! Should be (N)."
         else:
             self.loci = np.ones(self.n, dtype=bool)
-            print "No valid loci provided! Will use all loci."
+            print("No valid loci provided! Will use all loci.")
         # use only the upper traingle and exclude unmappable loci
         assert (diag >= 0) and (diag < self.n - 1), "Exclude diags should be [0, N - 1) !"
         self.diag = diag
@@ -112,7 +112,7 @@ class Poisson(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         p1, p2, p3, p4 = multinomial_p(self.p, mask=self.mask)
         # masked observed data
         oaa, oab, oba, obb = data['aa'][self.mask], data['ab'][self.mask], data['ba'][self.mask], data['bb'][self.mask]
@@ -140,7 +140,7 @@ class Poisson(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         p1, p2, p3, p4 = multinomial_p(self.p, mask=self.mask)
         # masked observed data
         oaa, oab, oba, obb = data['aa'][self.mask], data['ab'][self.mask], data['ba'][self.mask], data['bb'][self.mask]
@@ -169,7 +169,7 @@ class Poisson(BaseModel):
         # if p is not provided, estiamte with observed data
         if self.p is None:
             self.p = estimate_p(data, mask=self.mask)
-            print "Assignable probabilities are calculated using observed data."
+            print("Assignable probabilities are calculated using observed data.")
         taa, tab, tba, tbb = expected
         tmataa, tmatab, tmatba, tmatbb = np.zeros((self.n, self.n), dtype=float), \
             np.zeros((self.n, self.n), dtype=float), \

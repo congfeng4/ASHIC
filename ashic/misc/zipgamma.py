@@ -9,7 +9,7 @@ import os
 import click
 import numpy as np
 from scipy import stats
-import cPickle as pickle
+import pickle as pickle
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -88,11 +88,10 @@ def estimate_intra_gamma(conmat, conpat, start, nbins=200, plot=False, outdir=No
     binning = []
     for i in range(len(bins) - 1):
         binning.append((bins[i], bins[i + 1] - 1))
-    meangammas = map(lambda t: np.nanmean(
+    meangammas = [np.nanmean(
                      np.concatenate((gammas_mat[t[0]-start:t[1]-start+1],
-                                     gammas_pat[t[0]-start:t[1]-start+1]))),
-                     binning)
-    meanbinning = map(lambda t: np.nanmean(np.arange(t[0], t[1] + 1)), binning)
+                                     gammas_pat[t[0]-start:t[1]-start+1]))) for t in binning]
+    meanbinning = [np.nanmean(np.arange(t[0], t[1] + 1)) for t in binning]
     meanbinning = np.append(meanbinning, x.max())
     meangammas = np.append(meangammas, meangammas[-1])
     uspl = UnivariateSpline(x=meanbinning, y=meangammas,
