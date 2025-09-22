@@ -186,7 +186,9 @@ def _logjointpmf(z, obs, pois, p, gamma, ind, n, i, j):
     z = np.array(z)
     # logjp = (z == 1).sum() * np.log(gamma) + (z == 0).sum() * np.log(1 - gamma)
     # logjp = (z[0] + z[3]) * np.log(gamma[abs(i-j) - 1]) + (2 - z[0] - z[3]) * np.log(1 - gamma[abs(i-j) - 1]) + (z[1] + z[2]) * np.log(gamma[-1]) + (2 - z[1] - z[2]) * np.log(1 - gamma[-1]) 
-    logjp = _log_gamma(z[0] + z[3], gamma[abs(i-j) - 1]) + _log_gamma(2 - z[0] - z[3], 1 - gamma[abs(i-j) - 1]) + _log_gamma(z[1] + z[2], gamma[-1]) + _log_gamma(2 - z[1] - z[2], 1 - gamma[-1])
+    logjp = _log_gamma(z[0] + z[3], gamma[abs(i - j) - 1]) + _log_gamma(2 - z[0] - z[3],
+                                                                        1 - gamma[abs(i - j) - 1]) + _log_gamma(
+        z[1] + z[2], gamma[-1]) + _log_gamma(2 - z[1] - z[2], 1 - gamma[-1])
     for key in obs:
         if _check_zero_prob(obs[key][i, j], z[ind[key]]):
             return float('-inf')
@@ -250,13 +252,13 @@ class ZeroInflatedPoisson(BaseModel):
             assert (gamma.shape[0] >= self.merge + 1) and (gamma.shape[0] <= self.n), \
                 "Gamma size does not match bin-size! Should be at least (Merge + 1) or (N) if no merge."
             self.gamma = np.zeros(self.n, dtype=float)
-            self.gamma[:self.merge-1] = gamma[:self.merge-1]  # one gamma per diagonal
-            self.gamma[self.merge-1:-1] = gamma[self.merge-1]  # merged gamma
+            self.gamma[:self.merge - 1] = gamma[:self.merge - 1]  # one gamma per diagonal
+            self.gamma[self.merge - 1:-1] = gamma[self.merge - 1]  # merged gamma
             self.gamma[-1] = gamma[-1]  # inter-chr gamma
         else:
             self.gamma = np.zeros(self.n, dtype=float)
-            self.gamma[:self.merge-1] = random_state.uniform(0, 1, self.merge-1)
-            self.gamma[self.merge-1:-1] = random_state.uniform(0, 1, 1)
+            self.gamma[:self.merge - 1] = random_state.uniform(0, 1, self.merge - 1)
+            self.gamma[self.merge - 1:-1] = random_state.uniform(0, 1, 1)
             self.gamma[-1] = random_state.uniform(0, 0.1, 1)
             print("No initial gamma values provided! Initialize with random instead.")
         # check if bias is provided, otherwise initialize with ones
@@ -343,8 +345,8 @@ class ZeroInflatedPoisson(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip(ztuple,
-                                              (laa, lab, lba, lbb),
-                                              (oaa, oab, oba, obb)):
+                                   (laa, lab, lba, lbb),
+                                   (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab
@@ -390,15 +392,15 @@ class ZeroInflatedPoisson(BaseModel):
             diag_aa = np.diagonal(zaa, offset=offset)
             diag_bb = np.diagonal(zbb, offset=offset)
             diag = np.concatenate((diag_aa, diag_bb))
-            self.gamma[offset-1] = np.nanmean(diag)
+            self.gamma[offset - 1] = np.nanmean(diag)
         # update merge-gamma
         diag_merge = []
         for offset in range(self.merge, self.n):
             diag_merge = np.concatenate((diag_merge,
-                                        np.diagonal(zaa, offset=offset),
-                                        np.diagonal(zbb, offset=offset)))
+                                         np.diagonal(zaa, offset=offset),
+                                         np.diagonal(zbb, offset=offset)))
         gamma_merge = np.nanmean(diag_merge)
-        self.gamma[self.merge-1:-1] = gamma_merge
+        self.gamma[self.merge - 1:-1] = gamma_merge
         # update inter-gamma
         self.gamma[-1] = np.concatenate((z[1], z[2])).mean()
         # form ZaaTaa = Zaa * Oaa + ZaaCaa* + ZaaCa*a + ZaaCa*a*
@@ -454,8 +456,8 @@ class ZeroInflatedPoisson(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip(ztuple,
-                                              (laa, lab, lba, lbb),
-                                              (oaa, oab, oba, obb)):
+                                   (laa, lab, lba, lbb),
+                                   (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab
@@ -613,7 +615,8 @@ class ZeroInflatedPoisson(BaseModel):
                 exp_zc['b*b'][i, j] = obs['xb'][i, j] * (z_ab_bb[(1, 1)] * bin_param + z_ab_bb[(0, 1)])
                 # xx: a*a*, a*b*, b*a*, b*b*
                 # a*a*
-                bin_param4 = pois['aa'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
+                bin_param4 = pois['aa'][i, j] / (
+                            pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_1 = pois['aa'][i, j] / (pois['aa'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_2 = pois['aa'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['bb'][i, j])
                 bin_param3_3 = pois['aa'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j])
@@ -621,16 +624,17 @@ class ZeroInflatedPoisson(BaseModel):
                 bin_param2_2 = pois['aa'][i, j] / (pois['aa'][i, j] + pois['ba'][i, j])
                 bin_param2_3 = pois['aa'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j])
                 exp_zc['a*a*'][i, j] = obs['xx'][i, j] * (
-                    z_all[(1, 1, 1, 1)] * bin_param4 +
-                    z_all[(1, 0, 1, 1)] * bin_param3_1 +
-                    z_all[(1, 1, 0, 1)] * bin_param3_2 +
-                    z_all[(1, 1, 1, 0)] * bin_param3_3 +
-                    z_all[(1, 0, 0, 1)] * bin_param2_1 +
-                    z_all[(1, 0, 1, 0)] * bin_param2_2 +
-                    z_all[(1, 1, 0, 0)] * bin_param2_3 +
-                    z_all[(1, 0, 0, 0)])
+                        z_all[(1, 1, 1, 1)] * bin_param4 +
+                        z_all[(1, 0, 1, 1)] * bin_param3_1 +
+                        z_all[(1, 1, 0, 1)] * bin_param3_2 +
+                        z_all[(1, 1, 1, 0)] * bin_param3_3 +
+                        z_all[(1, 0, 0, 1)] * bin_param2_1 +
+                        z_all[(1, 0, 1, 0)] * bin_param2_2 +
+                        z_all[(1, 1, 0, 0)] * bin_param2_3 +
+                        z_all[(1, 0, 0, 0)])
                 # a*b*
-                bin_param4 = pois['ab'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
+                bin_param4 = pois['ab'][i, j] / (
+                            pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_1 = pois['ab'][i, j] / (pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_2 = pois['ab'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['bb'][i, j])
                 bin_param3_3 = pois['ab'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j])
@@ -638,16 +642,17 @@ class ZeroInflatedPoisson(BaseModel):
                 bin_param2_2 = pois['ab'][i, j] / (pois['ab'][i, j] + pois['ba'][i, j])
                 bin_param2_3 = pois['ab'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j])
                 exp_zc['a*b*'][i, j] = obs['xx'][i, j] * (
-                    z_all[(1, 1, 1, 1)] * bin_param4 +
-                    z_all[(0, 1, 1, 1)] * bin_param3_1 +
-                    z_all[(1, 1, 0, 1)] * bin_param3_2 +
-                    z_all[(1, 1, 1, 0)] * bin_param3_3 +
-                    z_all[(0, 1, 0, 1)] * bin_param2_1 +
-                    z_all[(0, 1, 1, 0)] * bin_param2_2 +
-                    z_all[(1, 1, 0, 0)] * bin_param2_3 +
-                    z_all[(0, 1, 0, 0)])
+                        z_all[(1, 1, 1, 1)] * bin_param4 +
+                        z_all[(0, 1, 1, 1)] * bin_param3_1 +
+                        z_all[(1, 1, 0, 1)] * bin_param3_2 +
+                        z_all[(1, 1, 1, 0)] * bin_param3_3 +
+                        z_all[(0, 1, 0, 1)] * bin_param2_1 +
+                        z_all[(0, 1, 1, 0)] * bin_param2_2 +
+                        z_all[(1, 1, 0, 0)] * bin_param2_3 +
+                        z_all[(0, 1, 0, 0)])
                 # b*a*
-                bin_param4 = pois['ba'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
+                bin_param4 = pois['ba'][i, j] / (
+                            pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_1 = pois['ba'][i, j] / (pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_2 = pois['ba'][i, j] / (pois['aa'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_3 = pois['ba'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j])
@@ -655,16 +660,17 @@ class ZeroInflatedPoisson(BaseModel):
                 bin_param2_2 = pois['ba'][i, j] / (pois['ab'][i, j] + pois['ba'][i, j])
                 bin_param2_3 = pois['ba'][i, j] / (pois['aa'][i, j] + pois['ba'][i, j])
                 exp_zc['b*a*'][i, j] = obs['xx'][i, j] * (
-                    z_all[(1, 1, 1, 1)] * bin_param4 +
-                    z_all[(0, 1, 1, 1)] * bin_param3_1 +
-                    z_all[(1, 0, 1, 1)] * bin_param3_2 +
-                    z_all[(1, 1, 1, 0)] * bin_param3_3 +
-                    z_all[(0, 0, 1, 1)] * bin_param2_1 +
-                    z_all[(0, 1, 1, 0)] * bin_param2_2 +
-                    z_all[(1, 0, 1, 0)] * bin_param2_3 +
-                    z_all[(0, 0, 1, 0)])
+                        z_all[(1, 1, 1, 1)] * bin_param4 +
+                        z_all[(0, 1, 1, 1)] * bin_param3_1 +
+                        z_all[(1, 0, 1, 1)] * bin_param3_2 +
+                        z_all[(1, 1, 1, 0)] * bin_param3_3 +
+                        z_all[(0, 0, 1, 1)] * bin_param2_1 +
+                        z_all[(0, 1, 1, 0)] * bin_param2_2 +
+                        z_all[(1, 0, 1, 0)] * bin_param2_3 +
+                        z_all[(0, 0, 1, 0)])
                 # b*b*
-                bin_param4 = pois['bb'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
+                bin_param4 = pois['bb'][i, j] / (
+                            pois['aa'][i, j] + pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_1 = pois['bb'][i, j] / (pois['ab'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_2 = pois['bb'][i, j] / (pois['aa'][i, j] + pois['ba'][i, j] + pois['bb'][i, j])
                 bin_param3_3 = pois['bb'][i, j] / (pois['aa'][i, j] + pois['ab'][i, j] + pois['bb'][i, j])
@@ -672,14 +678,14 @@ class ZeroInflatedPoisson(BaseModel):
                 bin_param2_2 = pois['bb'][i, j] / (pois['ab'][i, j] + pois['bb'][i, j])
                 bin_param2_3 = pois['bb'][i, j] / (pois['aa'][i, j] + pois['bb'][i, j])
                 exp_zc['b*b*'][i, j] = obs['xx'][i, j] * (
-                    z_all[(1, 1, 1, 1)] * bin_param4 +
-                    z_all[(0, 1, 1, 1)] * bin_param3_1 +
-                    z_all[(1, 0, 1, 1)] * bin_param3_2 +
-                    z_all[(1, 1, 0, 1)] * bin_param3_3 +
-                    z_all[(0, 0, 1, 1)] * bin_param2_1 +
-                    z_all[(0, 1, 0, 1)] * bin_param2_2 +
-                    z_all[(1, 0, 0, 1)] * bin_param2_3 +
-                    z_all[(0, 0, 0, 1)])
+                        z_all[(1, 1, 1, 1)] * bin_param4 +
+                        z_all[(0, 1, 1, 1)] * bin_param3_1 +
+                        z_all[(1, 0, 1, 1)] * bin_param3_2 +
+                        z_all[(1, 1, 0, 1)] * bin_param3_3 +
+                        z_all[(0, 0, 1, 1)] * bin_param2_1 +
+                        z_all[(0, 1, 0, 1)] * bin_param2_2 +
+                        z_all[(1, 0, 0, 1)] * bin_param2_3 +
+                        z_all[(0, 0, 0, 1)])
                 exp_zc['aa*'][j, i] = exp_zc['a*a'][i, j]
                 exp_zc['ab*'][j, i] = exp_zc['b*a'][i, j]
                 exp_zc['a*a'][j, i] = exp_zc['aa*'][i, j]

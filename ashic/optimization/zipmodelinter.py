@@ -5,7 +5,7 @@ from ashic.utils import rotation, fill_array3d
 
 
 def prepare_data(x, ztab, zab, alpha, beta, mask, loci, bias):
-    n = int(x.shape[0]/2)
+    n = int(x.shape[0] / 2)
     x1 = x[:n, :][loci, :]
     x2 = x[n:, :][loci, :]
     # find the centroids of x1, x2
@@ -93,7 +93,7 @@ def estimate_rotation(x, ztab, zab, alpha, beta, mask, loci, bias, maxiter=1000)
         x0=ini.flatten(),  # initial guess
         approx_grad=True,
         # fprime=eval_grad_f,  # gradient of function
-        args=(data, ),  # args to pass to function
+        args=(data,),  # args to pass to function
         iprint=1,
         maxiter=maxiter)
     thetaxm, thetaym, thetazm, thetaxp, thetayp, thetazp = results[0]

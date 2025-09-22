@@ -11,6 +11,7 @@ import numpy as np
 from scipy import stats
 import pickle as pickle
 import matplotlib as mpl
+
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
@@ -54,7 +55,7 @@ class ZeroInflatedPoisson(GenericLikelihoodModel):
             lambda_start = self.endog.sum() * 1. / (self.endog.size * (1 - excess_zeros))
             start_params = np.array([excess_zeros, lambda_start])
         return super(ZeroInflatedPoisson, self).fit(start_params=start_params,
-                                                maxiter=maxiter, maxfun=maxfun, **kwds)
+                                                    maxiter=maxiter, maxfun=maxfun, **kwds)
 
 
 def fit_zip(mat, seq):
@@ -89,8 +90,8 @@ def estimate_intra_gamma(conmat, conpat, start, nbins=200, plot=False, outdir=No
     for i in range(len(bins) - 1):
         binning.append((bins[i], bins[i + 1] - 1))
     meangammas = [np.nanmean(
-                     np.concatenate((gammas_mat[t[0]-start:t[1]-start+1],
-                                     gammas_pat[t[0]-start:t[1]-start+1]))) for t in binning]
+        np.concatenate((gammas_mat[t[0] - start:t[1] - start + 1],
+                        gammas_pat[t[0] - start:t[1] - start + 1]))) for t in binning]
     meanbinning = [np.nanmean(np.arange(t[0], t[1] + 1)) for t in binning]
     meanbinning = np.append(meanbinning, x.max())
     meangammas = np.append(meangammas, meangammas[-1])
@@ -107,8 +108,8 @@ def estimate_intra_gamma(conmat, conpat, start, nbins=200, plot=False, outdir=No
         ax.plot(x, newgammas, 'b-', lw=2, label='isotonic regression')
         ax.legend()
         plt.savefig(os.path.join(outdir, 'init_gamma.png'))
-    gammas = np.full(n-1, np.nan)
-    gammas[start-1:] = newgammas
+    gammas = np.full(n - 1, np.nan)
+    gammas[start - 1:] = newgammas
     return gammas
 
 
@@ -131,10 +132,10 @@ def estimate_gamma(data, mask, loci, diag, out, nbins):
     taa = mask_data(initcon[:n, :n], mask, loci)
     tbb = mask_data(initcon[n:, n:], mask, loci)
     tab = mask_data(initcon[:n, n:], mask, loci)
-    intra_gamma = estimate_intra_gamma(taa, tbb, 
-                                       start=diag+1, 
+    intra_gamma = estimate_intra_gamma(taa, tbb,
+                                       start=diag + 1,
                                        nbins=nbins,
-                                       plot=True, 
+                                       plot=True,
                                        outdir=out)
     inter_gamma = estimate_inter_gamma(tab)
     gamma = np.append(intra_gamma, inter_gamma)
@@ -152,11 +153,10 @@ def cli(filename, out, nbins):
         pk = pickle.load(fh)
         data = pk["obs"]
         params = pk["params"]
-        gamma = estimate_gamma(data, params["mask"], 
+        gamma = estimate_gamma(data, params["mask"],
                                params["loci"], params["diag"], out, nbins)
         np.savetxt(os.path.join(out, "init_gamma.txt"), gamma)
 
 
 if __name__ == "__main__":
     cli()
-

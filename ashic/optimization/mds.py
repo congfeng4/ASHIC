@@ -44,18 +44,18 @@ def smooth_intra(distances, h, diag=0):
     loci = (notna.sum(axis=0) + notna.sum(axis=1)) > 0
     smooth_dis = np.full(d.shape, np.nan, dtype=float)
     np.fill_diagonal(smooth_dis, 0)
-    for gdis in range(diag+1, n):
+    for gdis in range(diag + 1, n):
         for i in np.where(loci)[0]:
             j = i + gdis
             if j < n and loci[j] and np.isnan(d[i, j]):
                 # mean filter
-                low = max(0, i-h)
-                upper = min(i+h, n-1)
-                left = max(0, j-h)
-                right = min(j+h, n-1)
-                m = np.nanmean(d[low:upper+1, left:right+1])
+                low = max(0, i - h)
+                upper = min(i + h, n - 1)
+                left = max(0, j - h)
+                right = min(j + h, n - 1)
+                m = np.nanmean(d[low:upper + 1, left:right + 1])
                 # shortest distance
-                dpair = smooth_dis[i, i:j+1] + smooth_dis[i:j+1, j]
+                dpair = smooth_dis[i, i:j + 1] + smooth_dis[i:j + 1, j]
                 shortestd = np.nanmin(dpair)
                 smooth_dis[i, j] = np.nanmin(np.array([m, shortestd]))
                 smooth_dis[j, i] = smooth_dis[i, j]
@@ -69,13 +69,13 @@ def MDS_obj(X, distances):
     X = X.reshape(-1, 3)
     dis = euclidean_distances(X)
     X = X.flatten()
-    return ((dis - distances)**2).sum()
+    return ((dis - distances) ** 2).sum()
 
 
 def MDS_obj_sparse(X, distances):
     X = X.reshape(-1, 3)
-    dis = np.sqrt(((X[distances.row] - X[distances.col])**2).sum(axis=1))
-    return ((dis - distances.data)**2 / distances.data**2).sum()
+    dis = np.sqrt(((X[distances.row] - X[distances.col]) ** 2).sum(axis=1))
+    return ((dis - distances.data) ** 2 / distances.data ** 2).sum()
 
 
 def MDS_gradient(X, distances):
@@ -85,7 +85,7 @@ def MDS_gradient(X, distances):
     dif = tmp - tmp.transpose(1, 0, 2)
     dis = euclidean_distances(X).repeat(3, axis=1).flatten()
     distances = distances.repeat(3, axis=1).flatten()
-    grad = dif.flatten() * (dis - distances) / dis / distances.data**2
+    grad = dif.flatten() * (dis - distances) / dis / distances.data ** 2
     grad[(distances == 0) | np.isnan(grad)] = 0
     X = X.flatten()
     return grad.reshape((m, m, n)).sum(axis=1).flatten()
@@ -93,11 +93,11 @@ def MDS_gradient(X, distances):
 
 def MDS_gradient_sparse(X, distances):
     X = X.reshape(-1, 3)
-    dis = np.sqrt(((X[distances.row] - X[distances.col])**2).sum(axis=1))
+    dis = np.sqrt(((X[distances.row] - X[distances.col]) ** 2).sum(axis=1))
 
     grad = ((dis - distances.data) /
-            dis / distances.data**2)[:, np.newaxis] * (
-        X[distances.row] - X[distances.col])
+            dis / distances.data ** 2)[:, np.newaxis] * (
+                   X[distances.row] - X[distances.col])
     grad_ = np.zeros(X.shape)
 
     for i in range(X.shape[0]):
@@ -134,7 +134,7 @@ def estimate_X(counts, alpha=-3., beta=1., ini=None,
                 distances = sparse.coo_matrix(distances)
             elif numchr == 2:
                 disarray = distances.toarray()
-                m = int(n/2)
+                m = int(n / 2)
                 # smooth intra-chromosomal distance
                 disarray[:m, :m] = smooth_intra(disarray[:m, :m], h=h, diag=diag)
                 disarray[m:, m:] = smooth_intra(disarray[m:, m:], h=h, diag=diag)
@@ -148,7 +148,7 @@ def estimate_X(counts, alpha=-3., beta=1., ini=None,
     results = optimize.fmin_l_bfgs_b(
         MDS_obj_sparse, ini.flatten(),
         MDS_gradient_sparse,
-        (distances, ),
+        (distances,),
         iprint=verbose,
         factr=factr,
         maxiter=maxiter)

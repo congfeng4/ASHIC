@@ -62,7 +62,7 @@ def fit(data, outdir, modeltype, n=None, numruns=5, maxiter=20, tol=1e-2, alpha=
         else:
             raise ValueError("tail should between 1 and {}.".format(n - 1))
         model = create_model(init, modeltype=modeltype, seed=rseed, merge=merge)
-        simprogress = SimulationProgress(model, outdir=os.path.join(outdir, 'seed'+str(rseed)),
+        simprogress = SimulationProgress(model, outdir=os.path.join(outdir, 'seed' + str(rseed)),
                                          simobj=sim, seed=rseed, maxiter=maxiter, tol=tol)
         model, converge, loglikelihood, expected = emfit(model, sim.obs, maxiter=maxiter, tol=tol,
                                                          callback=simprogress.callback)

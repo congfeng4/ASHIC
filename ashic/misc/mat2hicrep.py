@@ -2,6 +2,7 @@ import os
 import click
 import numpy as np
 
+
 def convert(mat, ch, r, fh):
     n = mat.shape[0]
     start = 0
@@ -9,6 +10,7 @@ def convert(mat, ch, r, fh):
         end = start + r
         fh.write("{}\t{}\t{}\t".format(ch, start, end) + '\t'.join(map(str, mat[i])) + "\n")
         start = end
+
 
 @click.command()
 @click.argument('matfile')
@@ -28,6 +30,7 @@ def cli(matfile, outdir, resolution, prefix, ch):
     mat[np.isnan(mat)] = 0
     convert(mat, ch, resolution, cfw)
     cfw.close()
+
 
 if __name__ == '__main__':
     cli()

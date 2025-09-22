@@ -16,7 +16,7 @@ def join_matrix(m1, m2, m3, m4, n=None, mask=None):
         r2 = np.concatenate((m3, m4), axis=1)
         return np.concatenate((r1, r2), axis=0)
     else:
-        mat = np.full((n*2, n*2), np.nan, dtype=m1.dtype)
+        mat = np.full((n * 2, n * 2), np.nan, dtype=m1.dtype)
         mat[:n, :n][mask] = m1
         mat[:n, n:][mask] = m2
         mat[n:, :n][mask] = m3
@@ -45,7 +45,7 @@ def find_closestlength_chrom(chroms, chrom):
     minchrom = None
     for ch in chroms:
         if ch != chrom:
-            diff = abs(chroms[chrom].shape[0]-chroms[ch].shape[0])
+            diff = abs(chroms[chrom].shape[0] - chroms[ch].shape[0])
             if diff < mindiff:
                 mindiff = diff
                 minchrom = ch
@@ -65,8 +65,8 @@ def get_localinds(n, percentile=0.2, fragment_size=5):
     center = centerdis
     for i in range(nfragments):
         if i < nfragments - 1:
-            s = max(0, center-int(fragment_size/2))
-            e = min(s+fragment_size, n)
+            s = max(0, center - int(fragment_size / 2))
+            e = min(s + fragment_size, n)
             localinds.extend(list(range(s, e)))
             center += centerdis
         else:
@@ -74,8 +74,8 @@ def get_localinds(n, percentile=0.2, fragment_size=5):
                 end = fragment_size
             else:
                 end = length % fragment_size
-            s = max(0, center-int(fragment_size/2))
-            e = min(s+end, n)
+            s = max(0, center - int(fragment_size / 2))
+            e = min(s + end, n)
             localinds.extend(list(range(s, e)))
     return localinds
 
@@ -89,7 +89,7 @@ def parse_localinds(indstr):
     for rg in indstr.split(','):
         start, end = rg.split('-')
         start, end = int(start), int(end)
-        localinds.extend(list(range(start, end+1)))
+        localinds.extend(list(range(start, end + 1)))
     return localinds
 
 
@@ -113,7 +113,7 @@ def init_counts(certain, ax, bx, xx):
     """
     n = ax.shape[0]
     aa = certain[:n, :n] + 1e-6  # add pesudocount to avoid divide by 0
-    ab = certain[:n, n:] # + 1e-6  # TODO make inter pesudocount to 0
+    ab = certain[:n, n:]  # + 1e-6  # TODO make inter pesudocount to 0
     bb = certain[n:, n:] + 1e-6
     diploid = aa + ab + ab.T + bb
     # TODO change intra inter ratio
@@ -160,7 +160,7 @@ def naneuclidean_distances(x):
 
 
 def form_alphamatrix(alpha_mat, alpha_pat, alpha_inter, n):
-    alpha = np.full((n*2, n*2), np.nan)
+    alpha = np.full((n * 2, n * 2), np.nan)
     alpha[:n, :n] = alpha_mat
     alpha[n:, n:] = alpha_pat
     alpha[:n, n:] = alpha_inter
@@ -173,7 +173,7 @@ def mask_diagonals(n, k):
     return bool matrix with 0 to +k and 0 to -k diagonals masked as false
     elsewhere as true
     """
-    return np.tri(n, k=-(abs(k)+1), dtype=bool) | ~np.tri(n, k=abs(k), dtype=bool)
+    return np.tri(n, k=-(abs(k) + 1), dtype=bool) | ~np.tri(n, k=abs(k), dtype=bool)
 
 
 def nansampling():

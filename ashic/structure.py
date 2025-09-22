@@ -152,7 +152,7 @@ def compare_two_structure_reflection(Xo, Yo):
 
     dx = euclidean_distances(Xs.T)
     dy = euclidean_distances(Yc.T)
-    derror = np.absolute(dx-dy).sum() / dx.sum()
+    derror = np.absolute(dx - dy).sum() / dx.sum()
     return rmsd(Xs.T, Yc.T), derror, Xs.T, Yc.T
 
 

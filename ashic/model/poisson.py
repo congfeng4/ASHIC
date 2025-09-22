@@ -185,9 +185,9 @@ class Poisson(BaseModel):
         tmatbb = tmatbb + tmatbb.T
         tmat = join_matrix(tmataa, tmatab, tmatab.T, tmatbb)
         # if self.normalize:
-            # _, bias = iced.normalization.ICE_normalization(np.array(tmat), max_iter=iced_iter, output_bias=True)
-            # TODO check if bias make ll decrease or count iteration
-            # self.bias = bias
+        # _, bias = iced.normalization.ICE_normalization(np.array(tmat), max_iter=iced_iter, output_bias=True)
+        # TODO check if bias make ll decrease or count iteration
+        # self.bias = bias
         mask_full = np.tile(self.mask, (2, 2))
         symask_full = np.tile(self.symask, (2, 2))
         alpha = form_alphamatrix(self.alpha_mat, self.alpha_pat, self.alpha_inter, self.n)
@@ -202,8 +202,8 @@ class Poisson(BaseModel):
                             mask=self.mask, symask=self.symask, maxiter=max_func)
             self.x = np.concatenate((x1, x2))
             # TODO add bias to inter-homolog optimization
-            self.x = estimate_rotation(x=self.x, tab=tmatab, alpha=self.alpha_inter, beta=self.beta, 
-                                        mask=self.symask, loci=self.loci, bias=self.bias)
+            self.x = estimate_rotation(x=self.x, tab=tmatab, alpha=self.alpha_inter, beta=self.beta,
+                                       mask=self.symask, loci=self.loci, bias=self.bias)
         else:
             self.x = estimate_x(tmat, alpha, self.beta, bias=self.bias, ini=self.x,
                                 mask=mask_full, symask=symask_full, maxiter=max_func)

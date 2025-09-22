@@ -2,3 +2,5 @@
 *.pyc
 *.egg-info/
 ashic/examples/
+*.py.bak
+.idea

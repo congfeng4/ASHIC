@@ -34,7 +34,7 @@ def contact(mat, fragments, ch, fw):
     """
     n = mat.shape[0]
     for i in range(n):
-        for j in range(i+1, n):
+        for j in range(i + 1, n):
             if mat[i, j] > 0:
                 fw.write("{ch}\t{mid1}\t{ch}\t{mid2}\t{ct}\n".format(
                     ch=ch, mid1=fragments[i], mid2=fragments[j], ct=mat[i, j]

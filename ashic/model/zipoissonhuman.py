@@ -19,7 +19,7 @@ def poisson_lambda_multialpha(x, beta, alpha_mat, alpha_pat, alpha_inter, bias=N
     d = naneuclidean_distances(x)
     if bias is None:
         bias = np.ones(d.shape[0], dtype=float)
-    alpha = form_alphamatrix(alpha_mat, alpha_pat, alpha_inter, int(d.shape[0]/2))
+    alpha = form_alphamatrix(alpha_mat, alpha_pat, alpha_inter, int(d.shape[0] / 2))
     lambda_mat = (beta * np.power(d, alpha)) * np.outer(bias, bias)
     return lambda_mat.astype(float)
 
@@ -162,13 +162,13 @@ class ZeroInflatedPoissonHuman(BaseModel):
             assert (gamma.shape[0] >= self.merge + 1) and (gamma.shape[0] <= self.n), \
                 "Gamma size does not match bin-size! Should be at least (Merge + 1) or (N) if no merge."
             self.gamma = np.zeros(self.n, dtype=float)
-            self.gamma[:self.merge-1] = gamma[:self.merge-1]  # one gamma per diagonal
-            self.gamma[self.merge-1:-1] = gamma[self.merge-1]  # merged gamma
+            self.gamma[:self.merge - 1] = gamma[:self.merge - 1]  # one gamma per diagonal
+            self.gamma[self.merge - 1:-1] = gamma[self.merge - 1]  # merged gamma
             self.gamma[-1] = gamma[-1]  # inter-chr gamma
         else:
             self.gamma = np.zeros(self.n, dtype=float)
-            self.gamma[:self.merge-1] = random_state.uniform(0.9, 1, self.merge-1)
-            self.gamma[self.merge-1:-1] = random_state.uniform(0.9, 1, 1)
+            self.gamma[:self.merge - 1] = random_state.uniform(0.9, 1, self.merge - 1)
+            self.gamma[self.merge - 1:-1] = random_state.uniform(0.9, 1, 1)
             self.gamma[-1] = random_state.uniform(0.9, 1, 1)
             print("No initial gamma values provided! Initialize with random instead.")
         # check if bias is provided, otherwise initialize with ones
@@ -265,8 +265,8 @@ class ZeroInflatedPoissonHuman(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip(ztuple,
-                                              (laa, lab, lba, lbb),
-                                              (oaa, oab, oba, obb)):
+                                   (laa, lab, lba, lbb),
+                                   (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab
@@ -317,8 +317,8 @@ class ZeroInflatedPoissonHuman(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip((ztuple[0], ztuple[3]),
-                                              (laa, lbb),
-                                              (oaa, obb)):
+                                   (laa, lbb),
+                                   (oaa, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab
@@ -339,7 +339,6 @@ class ZeroInflatedPoissonHuman(BaseModel):
             ll = np.logaddexp(ll, f)
 
         return ll.sum()
-
 
     def maximization(self, data, expected, iced_iter=300, max_func=200, separate=False):
         # if p is not provided, estiamte with observed data
@@ -369,15 +368,15 @@ class ZeroInflatedPoissonHuman(BaseModel):
             diag_aa = np.diagonal(zaa, offset=offset)
             diag_bb = np.diagonal(zbb, offset=offset)
             diag = np.concatenate((diag_aa, diag_bb))
-            self.gamma[offset-1] = np.nanmean(diag)
+            self.gamma[offset - 1] = np.nanmean(diag)
         # update merge-gamma
         diag_merge = []
         for offset in range(self.merge, self.n):
             diag_merge = np.concatenate((diag_merge,
-                                        np.diagonal(zaa, offset=offset),
-                                        np.diagonal(zbb, offset=offset)))
+                                         np.diagonal(zaa, offset=offset),
+                                         np.diagonal(zbb, offset=offset)))
         gamma_merge = np.nanmean(diag_merge)
-        self.gamma[self.merge-1:-1] = gamma_merge
+        self.gamma[self.merge - 1:-1] = gamma_merge
         # update inter-gamma
         self.gamma[-1] = np.concatenate((z[1], z[2])).mean()
         # form ZaaTaa = Zaa * Oaa + ZaaCaa* + ZaaCa*a + ZaaCa*a*
@@ -393,9 +392,9 @@ class ZeroInflatedPoissonHuman(BaseModel):
         ztbb = ztbb + ztbb.T
         ztmat = join_matrix(ztaa, ztab, ztab.T, ztbb)
         # if self.normalize:
-            # _, bias = iced.normalization.ICE_normalization(np.array(ztmat), max_iter=iced_iter, output_bias=True)
-            # TODO check if bias make ll decrease or count iteration
-            # self.bias = bias
+        # _, bias = iced.normalization.ICE_normalization(np.array(ztmat), max_iter=iced_iter, output_bias=True)
+        # TODO check if bias make ll decrease or count iteration
+        # self.bias = bias
         mask_full = np.tile(self.mask, (2, 2))
         symask_full = np.tile(self.symask, (2, 2))
         alpha = form_alphamatrix(self.alpha_mat, self.alpha_pat, self.alpha_inter, self.n)
@@ -412,9 +411,9 @@ class ZeroInflatedPoissonHuman(BaseModel):
             self.x = np.concatenate((x1, x2))
             # update rotation angles
             # TODO add bias to inter-homolog optimization
-            self.x = estimate_rotation(x=self.x, ztab=ztab, zab=zab, 
-                                        alpha=self.alpha_inter, beta=self.beta, 
-                                        mask=self.symask, loci=self.loci, bias=self.bias)
+            self.x = estimate_rotation(x=self.x, ztab=ztab, zab=zab,
+                                       alpha=self.alpha_inter, beta=self.beta,
+                                       mask=self.symask, loci=self.loci, bias=self.bias)
         else:
             self.x = estimate_x_human(ztmat, zmat, alpha, self.beta, bias=self.bias, ini=self.x,
                                       mask=mask_full, symask=symask_full, maxiter=max_func)
@@ -456,8 +455,8 @@ class ZeroInflatedPoissonHuman(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip(ztuple,
-                                              (laa, lab, lba, lbb),
-                                              (oaa, oab, oba, obb)):
+                                   (laa, lab, lba, lbb),
+                                   (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab

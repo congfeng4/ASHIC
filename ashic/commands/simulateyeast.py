@@ -25,7 +25,7 @@ def load_yeaststructures():
     chroms = {}
     for i, length in enumerate(lengths, start=1):
         end = start + length
-        chroms['chr'+str(i)] = structures[start:end, :]
+        chroms['chr' + str(i)] = structures[start:end, :]
         start = end
     return chroms
 
@@ -162,7 +162,7 @@ def cmd_simulate_fromparams(paramsfile, outdir, modeltype,
         else:
             raise ValueError("tail should between 1 and {}.".format(params['n'] - 1))
         model = create_model(init, modeltype=modeltype, seed=rseed, merge=merge)
-        simprogress = SimulationProgress(model, outdir=os.path.join(outdir, 'em_seed_'+str(rseed)),
+        simprogress = SimulationProgress(model, outdir=os.path.join(outdir, 'em_seed_' + str(rseed)),
                                          simobj=sim, seed=rseed, maxiter=maxiter, tol=tol)
         model, converge, loglikelihood, expected = emfit(model, sim.obs, maxiter=maxiter, tol=tol,
                                                          callback=simprogress.callback)

@@ -84,7 +84,7 @@ def estimate_x(t, alpha, beta, bias=None, ini=None,
         eval_f,  # function to minimize
         ini.flatten(),  # initial guess
         eval_grad_f,  # gradient of function
-        (data, ),  # args to pass to function
+        (data,),  # args to pass to function
         iprint=1,
         maxiter=maxiter)
     results = results[0].reshape((-1, 3))

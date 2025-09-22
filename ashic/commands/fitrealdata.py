@@ -21,11 +21,11 @@ from ashic.model.zipoissonhuman import ZeroInflatedPoissonHuman
 from ashic.model.poisson import Poisson
 
 
-def create_model(init_params=None, model_type='ASHIC-ZIPM', 
-                 seed=0, merge=None, loci=None, diag=0, 
+def create_model(init_params=None, model_type='ASHIC-ZIPM',
+                 seed=0, merge=None, loci=None, diag=0,
                  normalize=False, mask=None):
     if model_type == 'ASHIC-ZIPM':
-        model = ZeroInflatedPoissonHuman(init_params, merge=merge, normalize=normalize, 
+        model = ZeroInflatedPoissonHuman(init_params, merge=merge, normalize=normalize,
                                          loci=loci, diag=diag, mask=mask,
                                          random_state=np.random.RandomState(seed=seed))
     elif model_type == 'ASHIC-PM':
@@ -38,8 +38,8 @@ def create_model(init_params=None, model_type='ASHIC-ZIPM',
 
 def run_ashic(inputfile, outputdir, model_type,
               diag, max_iter, tol, seed,
-              gamma_share, init_gamma, init_x, 
-              normalize, save_iter, smooth=False, h=1, 
+              gamma_share, init_gamma, init_x,
+              normalize, save_iter, smooth=False, h=1,
               **kwargs):
     if not os.path.exists(outputdir):
         os.makedirs(outputdir)
@@ -87,11 +87,11 @@ def run_ashic(inputfile, outputdir, model_type,
             with open(init_x) as xfh:
                 init['x'] = np.array(
                     json.load(xfh)['params']['x'],
-                    dtype=float).reshape((-1, 3)) 
+                    dtype=float).reshape((-1, 3))
         else:
             raise ValueError("Structures init file should be in text or json format.")
     else:
-        raise ValueError("Structures can only be initialized by: " + 
+        raise ValueError("Structures can only be initialized by: " +
                          "'random', 'MDS' or a precomputed file, not {}.".format(init_x))
     # merge is the diagonal where gamma sharing starts from
     if gamma_share is None:
@@ -103,16 +103,16 @@ def run_ashic(inputfile, outputdir, model_type,
     # add normalize
     if not normalize:
         model = create_model(init_params=init, model_type=model_type, seed=seed, merge=merge,
-                            loci=params['loci'], diag=diag, normalize=normalize, mask=params['mask'])
-        progress = BasicCallback(model, outdir=outputdir, simobj=None, 
-                                save=save_iter, seed=seed,
-                                maxiter=max_iter, tol=tol)
+                             loci=params['loci'], diag=diag, normalize=normalize, mask=params['mask'])
+        progress = BasicCallback(model, outdir=outputdir, simobj=None,
+                                 save=save_iter, seed=seed,
+                                 maxiter=max_iter, tol=tol)
         model, converge, loglikelihood, expected, message = emfit(model, data, maxiter=max_iter, tol=tol,
-                                                                callback=progress.callback, **kwargs)
+                                                                  callback=progress.callback, **kwargs)
     else:
         # start with draft model which bias=1 and normalize=False
         model = create_model(init_params=init, model_type=model_type, seed=seed, merge=merge,
-                            loci=params['loci'], diag=diag, normalize=False, mask=params['mask'])
+                             loci=params['loci'], diag=diag, normalize=False, mask=params['mask'])
         # remove draft_progress later
         # draft_progress = BasicCallback(model, outdir=os.path.join(outputdir, 'draft'), simobj=None, 
         #                         save=save_iter, seed=seed,
@@ -129,12 +129,12 @@ def run_ashic(inputfile, outputdir, model_type,
         # set bias and normalize=True in the draft model
         model.bias = bias
         model.normalize = True
-        progress = BasicCallback(model, outdir=outputdir, simobj=None, 
-                                save=save_iter, seed=seed,
-                                maxiter=max_iter, tol=tol)
+        progress = BasicCallback(model, outdir=outputdir, simobj=None,
+                                 save=save_iter, seed=seed,
+                                 maxiter=max_iter, tol=tol)
         # continue optimization on the draft model with bias
         model, converge, loglikelihood, expected, message = emfit(model, data, maxiter=max_iter, tol=tol,
-                                                                callback=progress.callback, **kwargs)
+                                                                  callback=progress.callback, **kwargs)
     # save expected Z and T matrices
     mtxpath = os.path.join(outputdir, 'matrices')
     if not os.path.exists(mtxpath):

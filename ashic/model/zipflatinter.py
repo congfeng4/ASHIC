@@ -149,13 +149,13 @@ class ZeroInflatedPoissonFI(BaseModel):
             assert (gamma.shape[0] >= self.merge + 1) and (gamma.shape[0] <= self.n), \
                 "Gamma size does not match bin-size! Should be at least (Merge + 1) or (N) if no merge."
             self.gamma = np.zeros(self.n, dtype=float)
-            self.gamma[:self.merge-1] = gamma[:self.merge-1]  # one gamma per diagonal
-            self.gamma[self.merge-1:-1] = gamma[self.merge-1]  # merged gamma
+            self.gamma[:self.merge - 1] = gamma[:self.merge - 1]  # one gamma per diagonal
+            self.gamma[self.merge - 1:-1] = gamma[self.merge - 1]  # merged gamma
             self.gamma[-1] = gamma[-1]  # inter-chr gamma
         else:
             self.gamma = np.zeros(self.n, dtype=float)
-            self.gamma[:self.merge-1] = random_state.uniform(0, 1, self.merge-1)
-            self.gamma[self.merge-1:-1] = random_state.uniform(0, 1, 1)
+            self.gamma[:self.merge - 1] = random_state.uniform(0, 1, self.merge - 1)
+            self.gamma[self.merge - 1:-1] = random_state.uniform(0, 1, 1)
             self.gamma[-1] = random_state.uniform(0, 0.1, 1)
             print("No initial gamma values provided! Initialize with random instead.")
         # check if bias is provided, otherwise initialize with ones
@@ -243,8 +243,8 @@ class ZeroInflatedPoissonFI(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip(ztuple,
-                                              (laa, lab, lba, lbb),
-                                              (oaa, oab, oba, obb)):
+                                   (laa, lab, lba, lbb),
+                                   (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab
@@ -289,15 +289,15 @@ class ZeroInflatedPoissonFI(BaseModel):
             diag_aa = np.diagonal(zaa, offset=offset)
             diag_bb = np.diagonal(zbb, offset=offset)
             diag = np.concatenate((diag_aa, diag_bb))
-            self.gamma[offset-1] = np.nanmean(diag)
+            self.gamma[offset - 1] = np.nanmean(diag)
         # update merge-gamma
         diag_merge = []
         for offset in range(self.merge, self.n):
             diag_merge = np.concatenate((diag_merge,
-                                        np.diagonal(zaa, offset=offset),
-                                        np.diagonal(zbb, offset=offset)))
+                                         np.diagonal(zaa, offset=offset),
+                                         np.diagonal(zbb, offset=offset)))
         gamma_merge = np.nanmean(diag_merge)
-        self.gamma[self.merge-1:-1] = gamma_merge
+        self.gamma[self.merge - 1:-1] = gamma_merge
         # update inter-gamma
         self.gamma[-1] = np.concatenate((z[1], z[2])).mean()
         # form ZaaTaa = Zaa * Oaa + ZaaCaa* + ZaaCa*a + ZaaCa*a*
@@ -362,8 +362,8 @@ class ZeroInflatedPoissonFI(BaseModel):
             # log f(obs) = z * log_poisson(p1 * lambda) + (1-z) * log_1(obs==0)
             # poisson.logpmf(k,0) = 0 if k == 0 else = -inf
             for z, lmd, obs in zip(ztuple,
-                                              (laa, lab, lba, lbb),
-                                              (oaa, oab, oba, obb)):
+                                   (laa, lab, lba, lbb),
+                                   (oaa, oab, oba, obb)):
                 f += poisson.logpmf(obs, z * p1 * lmd)
             # ax = aa + ab
             lax = ztuple[0] * laa + ztuple[1] * lab

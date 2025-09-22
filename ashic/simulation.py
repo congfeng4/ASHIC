@@ -104,14 +104,14 @@ class Simulation(object):
         gamma_inter = np.full((n, n), gamma[-1])
         gamma_intra = np.zeros((n, n))
         for i in range(n):
-            for j in range(i+1, n):
-                gamma_intra[i, j] = gamma[abs(i-j) - 1]
+            for j in range(i + 1, n):
+                gamma_intra[i, j] = gamma[abs(i - j) - 1]
                 gamma_intra[j, i] = gamma_intra[i, j]
         mat_1 = np.concatenate((gamma_intra, gamma_inter), axis=1)
         mat_2 = np.concatenate((gamma_inter, gamma_intra), axis=1)
         gamma_mat = np.concatenate((mat_1, mat_2), axis=0)
         z = self.randstate.binomial(1, gamma_mat)
-        
+
         # set diagonal of Z to 0
         np.fill_diagonal(z, 0)
         np.fill_diagonal(z[:n, n:], 0)
@@ -235,8 +235,8 @@ class SimulationHuman(object):
         # distance matrix
         d = naneuclidean_distances(x)
         # TODO mask
-        self.mask = (d[:n, :n] > np.nanpercentile(d[:n, :n], q=100-self.filter_high)) & \
-                    (d[n:, n:] > np.nanpercentile(d[n:, n:], q=100-self.filter_high))
+        self.mask = (d[:n, :n] > np.nanpercentile(d[:n, :n], q=100 - self.filter_high)) & \
+                    (d[n:, n:] > np.nanpercentile(d[n:, n:], q=100 - self.filter_high))
         self.mask = self.mask & mask_diagonals(n, k=self.diag)
         self.mask[~self.loci, :] = False
         self.mask[:, ~self.loci] = False

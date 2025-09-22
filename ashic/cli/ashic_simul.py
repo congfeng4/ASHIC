@@ -144,7 +144,8 @@ def run(inputs, outdir, paramsfile, model, simulated, beta, diag,
     """
     simulatehuman.cmd_run(inputs, outdir, paramsfile=paramsfile, modeltype=model,
                           is_simulation=simulated, savemat=save, saveprog=prog, beta=beta, diag=diag,
-                          maxiter=maxiter, tol=tol, seed=seed, tail=tail, initgamma=initgamma, initx=initx, smooth=False, h=1,
+                          maxiter=maxiter, tol=tol, seed=seed, tail=tail, initgamma=initgamma, initx=initx,
+                          smooth=False, h=1,
                           max_func=max_func, separate=separate)
 
 
@@ -178,7 +179,7 @@ def simulationhuman(paramsfile, outdir, modeltype, numruns, maxiter, tol,
               type=click.Choice(['ziphuman', 'poisson']))
 @click.argument('outdir')
 def getopt(outdir, rs, nrun, model, method):
-    postprocessing.find_opt_run(outdir, rs=rs, nrun=nrun, 
+    postprocessing.find_opt_run(outdir, rs=rs, nrun=nrun,
                                 modeltype=model, method=method)
 
 
@@ -187,6 +188,7 @@ def getopt(outdir, rs, nrun, model, method):
 @click.argument('outdir')
 def suppmat(data, outdir):
     postprocessing.suppmat(data, outdir)
+
 
 if __name__ == '__main__':
     cli()

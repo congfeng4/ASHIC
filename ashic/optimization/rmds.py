@@ -33,7 +33,7 @@ def mds_gradient(X, distances):
     dif = tmp - tmp.transpose(1, 0, 2)
     dis = euclidean_distances(X).repeat(3, axis=1).flatten()
     wish_distances = distances.repeat(3, axis=1).flatten()
-    grad = 2 * dif.flatten() * (dis - wish_distances) / dis / wish_distances**2
+    grad = 2 * dif.flatten() * (dis - wish_distances) / dis / wish_distances ** 2
     grad[(wish_distances == 0) | np.isnan(grad)] = 0
     X = X.flatten()
     return grad.reshape((m, m, n)).sum(axis=1).flatten()
@@ -52,11 +52,12 @@ def estimate_X(counts, alpha=-3., beta=1., ini=None,
     results = optimize.fmin_l_bfgs_b(
         mds_objective, ini.flatten(),
         mds_gradient,
-        (distances, ),
+        (distances,),
         iprint=int(verbose),
         factr=factr,
         maxiter=maxiter)
     return results[0].reshape((-1, 3))
+
 
 ####################################
 ## combine two haploid structures ##
@@ -141,14 +142,14 @@ def grad_rotation(thetax, thetay, thetaz):
     sy, cy = np.sin(thetay), np.cos(thetay)
     sz, cz = np.sin(thetaz), np.cos(thetaz)
     gradX = np.array([[0, 0, 0],
-                  [0, -sx, -cx],
-                  [0, cx, -sx]])
+                      [0, -sx, -cx],
+                      [0, cx, -sx]])
     gradY = np.array([[-sy, 0, cy],
-                  [0, 0, 0],
-                  [-cy, 0, -sy]])
+                      [0, 0, 0],
+                      [-cy, 0, -sy]])
     gradZ = np.array([[-sz, -cz, 0],
-                  [cz, -sz, 0],
-                  [0, 0, 0]])
+                      [cz, -sz, 0],
+                      [0, 0, 0]])
     return gradX, gradY, gradZ
 
 
@@ -178,22 +179,29 @@ def f_grad(R, *params):
     grad_ym = tmp * (dif * Rdot(RXm, gRYm, RZm).dot(X.T).T.repeat(n, axis=0).reshape((n, n, 3))).sum(axis=2)
     grad_zm = tmp * (dif * Rdot(RXm, RYm, gRZm).dot(X.T).T.repeat(n, axis=0).reshape((n, n, 3))).sum(axis=2)
     # Theta_y gradients
-    grad_xp = -tmp * (dif * Rdot(gRXp, RYp, RZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(axis=2)
-    grad_yp = -tmp * (dif * Rdot(RXp, gRYp, RZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(axis=2)
-    grad_zp = -tmp * (dif * Rdot(RXp, RYp, gRZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(axis=2)
-    return np.array([x[np.invert(np.isnan(distances) | (distances == 0))].sum() for x in (grad_xm, grad_ym, grad_zm, grad_xp, grad_yp, grad_zp)])
+    grad_xp = -tmp * (
+                dif * Rdot(gRXp, RYp, RZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(
+        axis=2)
+    grad_yp = -tmp * (
+                dif * Rdot(RXp, gRYp, RZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(
+        axis=2)
+    grad_zp = -tmp * (
+                dif * Rdot(RXp, RYp, gRZp).dot(Y.T).T.repeat(n, axis=0).reshape((n, n, 3)).transpose(1, 0, 2)).sum(
+        axis=2)
+    return np.array([x[np.invert(np.isnan(distances) | (distances == 0))].sum() for x in
+                     (grad_xm, grad_ym, grad_zm, grad_xp, grad_yp, grad_zp)])
 
 
 def combine_X(counts, iniX, iniY, alpha=-3., beta=1., loci=None, verbose=0, random_state=None):
     random_state = check_random_state(random_state)
-    n = int(counts.shape[0]/2)
+    n = int(counts.shape[0] / 2)
     if loci is None:
         loci = np.ones(n, dtype=bool)
     mat_pat = counts[:n, n:][loci, :][:, loci]
     X = iniX[loci, :]
     Y = iniY[loci, :]
     # centroid distance = (mean(counts_inter) / beta)^(1/alpha)
-    d = np.power(np.nanmean(mat_pat) / beta, 1./alpha)
+    d = np.power(np.nanmean(mat_pat) / beta, 1. / alpha)
     # actually not the two centroids distance,
     # but the two interacting *surface* distance
     # radiusm = np.nanpercentile(euclidean_distances(X), 99) / 2.
@@ -204,20 +212,20 @@ def combine_X(counts, iniX, iniY, alpha=-3., beta=1., loci=None, verbose=0, rand
     Y = centering(Y)
     distances = compute_wish_distances(mat_pat, alpha=alpha, beta=beta)
     params = (d, X, Y, distances)
-    rranges = ((-np.pi, np.pi), (-0.5*np.pi, 0.5*np.pi), (-np.pi, np.pi),
-               (-np.pi, np.pi), (-0.5*np.pi, 0.5*np.pi), (-np.pi, np.pi))
+    rranges = ((-np.pi, np.pi), (-0.5 * np.pi, 0.5 * np.pi), (-np.pi, np.pi),
+               (-np.pi, np.pi), (-0.5 * np.pi, 0.5 * np.pi), (-np.pi, np.pi))
     thetaxm, thetaxp, thetazm, thetazp = random_state.uniform(-1, 1, 4) * np.pi
     thetaym, thetayp = random_state.uniform(-0.5, 0.5, 2) * np.pi
     ini = (thetaxm, thetaym, thetazm,
            thetaxp, thetayp, thetazp)
     results = optimize.fmin_l_bfgs_b(
-                        f,
-                        x0=np.array(ini),
-                        fprime=f_grad,
-                        # approx_grad=True,
-                        bounds=rranges,
-                        args=params,
-                        iprint=int(verbose))
+        f,
+        x0=np.array(ini),
+        fprime=f_grad,
+        # approx_grad=True,
+        bounds=rranges,
+        args=params,
+        iprint=int(verbose))
     thetaxm, thetaym, thetazm, thetaxp, thetayp, thetazp = results[0]
     # value of the function at minimum
     fvalue = results[1]

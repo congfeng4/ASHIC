@@ -67,8 +67,8 @@ def cmd_estimate_params(chrom, outdir, alpha_inter=-3.0, gamma_inter=0.05,
     # filter too small distance/high contacts
     # mask unmappable loci
     # mask first diagonal
-    mask = (dmat > np.nanpercentile(dmat, q=100-filter_high)) & \
-           (dpat > np.nanpercentile(dpat, q=100-filter_high)) & \
+    mask = (dmat > np.nanpercentile(dmat, q=100 - filter_high)) & \
+           (dpat > np.nanpercentile(dpat, q=100 - filter_high)) & \
            (~np.tri(n, k=diag, dtype=bool))
     loci = (conmat.sum(axis=0) > 0) & (conpat.sum(axis=0) > 0) & \
            (np.isnan(xmat).sum(axis=1) == 0) & (np.isnan(xpat).sum(axis=1) == 0)
@@ -79,10 +79,10 @@ def cmd_estimate_params(chrom, outdir, alpha_inter=-3.0, gamma_inter=0.05,
     conmat[~mask] = np.nan
     conpat[~mask] = np.nan
     # estimate alpha using curve fitting
-    alpha_mat = estimateparams.estimate_alpha(conmat, dmat, diag+1,
+    alpha_mat = estimateparams.estimate_alpha(conmat, dmat, diag + 1,
                                               plot=plot,
                                               savefile=os.path.join(outdir, 'maternal_alpha.png'))
-    alpha_pat = estimateparams.estimate_alpha(conpat, dpat, diag+1,
+    alpha_pat = estimateparams.estimate_alpha(conpat, dpat, diag + 1,
                                               plot=plot,
                                               savefile=os.path.join(outdir, 'paternal_alpha.png'))
     # estimate beta using MLE
@@ -91,8 +91,8 @@ def cmd_estimate_params(chrom, outdir, alpha_inter=-3.0, gamma_inter=0.05,
     if plot:
         estimateparams.plot_simulated(estimateparams.sampling(beta, dmat, alpha_mat),
                                       estimateparams.sampling(beta, dpat, alpha_pat),
-                                      conmat, conpat, diag+1, outdir)
-    gamma_intra = estimateparams.estimate_gamma(conmat, conpat, diag+1, plot=plot, outdir=outdir)
+                                      conmat, conpat, diag + 1, outdir)
+    gamma_intra = estimateparams.estimate_gamma(conmat, conpat, diag + 1, plot=plot, outdir=outdir)
     p = simulation.sample_p(a=p_a, b=p_b, n=n, randstate=seed)
     params = {
         'chrom': chrom,
@@ -164,7 +164,7 @@ def cmd_downsample_params(paramsfile, outdir, frac_beta=None, frac_p=None, seed=
         params['beta'] *= frac_beta
     if frac_p is not None:
         p_a = 2.
-        p_b = (p_a - 0.5*frac_p*p_a) / (0.5 * frac_p)
+        p_b = (p_a - 0.5 * frac_p * p_a) / (0.5 * frac_p)
         params['p'] = simulation.sample_p(a=p_a, b=p_b, n=params['n'], randstate=seed)
         params['p'] = params['p'].flatten().tolist()
         # merge settings to params
@@ -191,7 +191,8 @@ def cmd_simulate_data(paramsfile, outdir, seed=0):
 
 # TODO allow simulated data and real data
 def cmd_run(inputs, outdir, paramsfile=None, modeltype='ziphuman', is_simulation=False, savemat=True, saveprog=True,
-            beta=1.0, diag=1, maxiter=30, tol=1e-4, seed=0, tail=None, initgamma=None, initx=None, smooth=False, h=1, **kwargs):
+            beta=1.0, diag=1, maxiter=30, tol=1e-4, seed=0, tail=None, initgamma=None, initx=None, smooth=False, h=1,
+            **kwargs):
     start_time = time()
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -298,7 +299,7 @@ def cmd_run(inputs, outdir, paramsfile=None, modeltype='ziphuman', is_simulation
     simprogress = BasicCallback(model, outdir=outdir, simobj=sim, save=saveprog, seed=seed,
                                 maxiter=maxiter, tol=tol)
     model, converge, loglikelihood, expected, message = emfit(model, data, maxiter=maxiter, tol=tol,
-                                                     callback=simprogress.callback, **kwargs)
+                                                              callback=simprogress.callback, **kwargs)
     # DONE add save for Poisson
     # DONE add option for save
     if savemat:
@@ -324,7 +325,7 @@ def cmd_run(inputs, outdir, paramsfile=None, modeltype='ziphuman', is_simulation
             'converge': converge,
             'message': message,
             'seed': seed,
-            'elapsed_time': str(timedelta(seconds=time()-start_time))
+            'elapsed_time': str(timedelta(seconds=time() - start_time))
         }
         if is_simulation:
             retdict['params_filepath'] = os.path.abspath(paramsfile)

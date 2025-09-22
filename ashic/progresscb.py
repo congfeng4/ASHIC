@@ -56,14 +56,14 @@ class BasicCallback(object):
         if self.simobj:
             if self.save:
                 plot3d.compare(np.array(model.x), np.array(self.simobj.params['x']),
-                               name=self.modeltype, prefix=str(i)+"_", out=self.plotdir)
+                               name=self.modeltype, prefix=str(i) + "_", out=self.plotdir)
             n = model.n
             loci = model.loci
             x = model.x
             y = self.simobj.params['x']
             # relative error for p
             re_p = np.nansum(np.absolute(model.p[loci] - self.simobj.params['p'][loci])) \
-                / np.nansum(self.simobj.params['p'][loci])
+                   / np.nansum(self.simobj.params['p'][loci])
             # relative error for intra-distance
             x1 = x[:n, :][loci, :]
             x2 = x[n:, :][loci, :]
@@ -84,20 +84,20 @@ class BasicCallback(object):
             re_dm = np.absolute(dx1 - dy1).sum() / dy1.sum()
             re_dp = np.absolute(dx2 - dy2).sum() / dy2.sum()
             re_d = (np.absolute(dx1 - dy1).sum() + np.absolute(dx2 - dy2).sum()) \
-                / (dy1.sum() + dy2.sum())
+                   / (dy1.sum() + dy2.sum())
             # relative error for intra-contact
             ztaa, _, _, ztbb = disjoin_matrix(self.simobj.hidden['zt'], n, model.mask)
             if self.modeltype == 'ZIP':
                 # relative error for gamma
                 re_gamma = np.nansum(np.absolute(model.gamma - self.simobj.params['gamma'])) \
-                    / np.nansum(self.simobj.params['gamma'])
+                           / np.nansum(self.simobj.params['gamma'])
                 re_t = (np.absolute(expected[1][0] - ztaa).sum() + np.absolute(expected[1][3] - ztbb).sum()) \
-                    / (ztaa.sum() + ztbb.sum())
+                       / (ztaa.sum() + ztbb.sum())
                 logstr += "\t{}\t{}\t{}\t{}\t{}\t{}".format(re_p, re_gamma, re_dm, re_dp, re_d, re_t)
                 self.errors['gamma'] = re_gamma
             elif self.modeltype == 'Poisson':
                 re_t = (np.absolute(expected[0] - ztaa).sum() + np.absolute(expected[3] - ztbb).sum()) \
-                    / (ztaa.sum() + ztbb.sum())
+                       / (ztaa.sum() + ztbb.sum())
                 logstr += "\t{}\t{}\t{}\t{}\t{}".format(re_p, re_dm, re_dp, re_d, re_t)
             self.errors['p'] = re_p
             self.errors['dm'] = re_dm
@@ -107,7 +107,7 @@ class BasicCallback(object):
         else:
             if self.save:
                 plot3d.plot(np.array(model.x), diploid=True,
-                            prefix=str(i)+"_", out=self.plotdir)
+                            prefix=str(i) + "_", out=self.plotdir)
         with open(self.logfile, 'a') as fh:
             fh.write(logstr + "\n")
         if self.save:
@@ -148,7 +148,7 @@ class SimulationProgress(object):
             re_p = np.absolute(
                 model_params['p'][model.loci] -
                 self.simobj.params['p'][model.loci]).sum() \
-                / self.simobj.params['p'][model.loci].sum()
+                   / self.simobj.params['p'][model.loci].sum()
             self.errors['p'] = re_p
             d1 = uniformscaling_distance(model_params['x'])
             d2 = uniformscaling_distance(self.simobj.params['x'])
@@ -157,8 +157,8 @@ class SimulationProgress(object):
             self.errors['D'] = re_d
             daa1, _, _, dbb1 = disjoin_matrix(d1, model_params['n'], model.mask)
             daa2, _, _, dbb2 = disjoin_matrix(d2, model_params['n'], model.mask)
-            re_d_intra = (np.absolute(daa1 - daa2).sum() + np.absolute(dbb1 - dbb2).sum())\
-                / (daa2.sum() + dbb2.sum())
+            re_d_intra = (np.absolute(daa1 - daa2).sum() + np.absolute(dbb1 - dbb2).sum()) \
+                         / (daa2.sum() + dbb2.sum())
             self.errors['intraD'] = re_d_intra
             logstr += "\t{}".format(re_p)
             ztaa2, _, _, ztbb2 = disjoin_matrix(self.simobj.hidden['zt'], model_params['n'], model.mask)
@@ -166,23 +166,23 @@ class SimulationProgress(object):
                 zt = join_matrix(expected[1][0], expected[1][1], expected[1][2], expected[1][3],
                                  n=model_params['n'], mask=model.mask)
                 re_t = np.absolute(zt[mask] - self.simobj.hidden['zt'][mask]).sum() \
-                    / self.simobj.hidden['zt'][mask].sum()
+                       / self.simobj.hidden['zt'][mask].sum()
                 self.errors['T'] = re_t
-                re_t_intra = (np.absolute(expected[1][0] - ztaa2).sum() + np.absolute(expected[1][3] - ztbb2).sum())\
-                    / (ztaa2.sum() + ztbb2.sum())
+                re_t_intra = (np.absolute(expected[1][0] - ztaa2).sum() + np.absolute(expected[1][3] - ztbb2).sum()) \
+                             / (ztaa2.sum() + ztbb2.sum())
                 self.errors['intraT'] = re_t_intra
                 re_gamma = np.absolute(model_params['gamma'] - self.simobj.params['gamma']).sum() \
-                    / self.simobj.params['gamma'].sum()
+                           / self.simobj.params['gamma'].sum()
                 self.errors['gamma'] = re_gamma
                 logstr += "\t{}\t{}\t{}\t{}\t{}".format(re_gamma, re_d, re_d_intra, re_t, re_t_intra)
             if isinstance(model, Poisson):
                 t = join_matrix(expected[0], expected[1], expected[2], expected[3],
                                 n=model_params['n'], mask=model.mask)
                 re_t = np.absolute(t[mask] - self.simobj.hidden['zt'][mask]).sum() \
-                    / self.simobj.hidden['zt'][mask].sum()
+                       / self.simobj.hidden['zt'][mask].sum()
                 self.errors['T'] = re_t
-                re_t_intra = (np.absolute(expected[0] - ztaa2).sum() + np.absolute(expected[3] - ztbb2).sum())\
-                    / (ztaa2.sum() + ztbb2.sum())
+                re_t_intra = (np.absolute(expected[0] - ztaa2).sum() + np.absolute(expected[3] - ztbb2).sum()) \
+                             / (ztaa2.sum() + ztbb2.sum())
                 self.errors['intraT'] = re_t_intra
                 logstr += "\t{}\t{}\t{}\t{}".format(re_d, re_d_intra, re_t, re_t_intra)
         with open(self.logfile, 'a') as fh:

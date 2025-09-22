@@ -54,7 +54,7 @@ def plot_diploid(X, Y, name=None):
         )
     )
 
-    data=[tracem, tracep]
+    data = [tracem, tracep]
     return data
 
 
@@ -94,7 +94,7 @@ def alignment(Xo, Yo, m):
 
 def compare(combinex, truex, name=None, prefix=None, out=None, scale=True):
     # scale the combined and true structures
-    n = int(combinex.shape[0]/2)
+    n = int(combinex.shape[0] / 2)
     loci = (np.isnan(combinex).sum(axis=1) == 0) & (np.isnan(truex).sum(axis=1) == 0)
     m = loci[:n].sum()
     if scale:
@@ -108,7 +108,7 @@ def compare(combinex, truex, name=None, prefix=None, out=None, scale=True):
         np.nanmax(euclidean_distances(ttruex[:m, :])),
         np.nanmax(euclidean_distances(ttruex[m:, :]))
     ])
-    ttruex = ttruex + np.tile([2*diameter, 0, 0], (ttruex.shape[0], 1))
+    ttruex = ttruex + np.tile([2 * diameter, 0, 0], (ttruex.shape[0], 1))
     data1 = plot_diploid(tcombinex[:m, :], tcombinex[m:, :], name=name)
     data2 = plot_diploid(ttruex[:m, :], ttruex[m:, :], name='True')
     data = data1 + data2
@@ -127,7 +127,7 @@ def plot(X, Y=None, diploid=False, prefix=None, out=None):
         if Y:
             data = plot_diploid(X, Y)
         else:
-            n = int(X.shape[0]/2)
+            n = int(X.shape[0] / 2)
             data = plot_diploid(X[:n, :], X[n:, :])
     else:
         data = plot_haploid(X)

@@ -17,6 +17,7 @@ def symlink_force(source, link_name):
         os.remove(link_name)
     os.symlink(source, link_name)
 
+
 def model_rank(path, model_type, method, data):
     """
     return rank statistic for given model
@@ -54,7 +55,7 @@ def find_opt_run(output_dir, rs=0, nrun=10, modeltype='ziphuman', method='ll'):
     :return:
     """
     opt_dir = os.path.join(output_dir, 'opt_run')
-    dir_list = [os.path.join(output_dir, 'run_{}'.format(i)) for i in range(rs, rs+nrun)]
+    dir_list = [os.path.join(output_dir, 'run_{}'.format(i)) for i in range(rs, rs + nrun)]
     with open(os.path.join(dir_list[0], 'result.json'), 'r') as fh:
         with open(json.load(fh)['pickle_filepath'], 'rb') as fr:
             data = pickle.load(fr)
@@ -100,7 +101,6 @@ def suppmat(data_file, output_dir):
     np.savetxt(os.path.join(output_dir, 'taa.txt'), taa)
     np.savetxt(os.path.join(output_dir, 'tab.txt'), tab)
     np.savetxt(os.path.join(output_dir, 'tbb.txt'), tbb)
-
 
 # output
 #   - errors

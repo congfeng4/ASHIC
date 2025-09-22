@@ -4,12 +4,13 @@ import pickle as pickle
 import numpy as np
 from ashic.misc.zipgamma import estimate_gamma
 
-
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     """Collection of helper commands for ASHIC."""
+
 
 @cli.command(name='fitgamma')
 @click.argument("datafile", type=click.Path(exists=True))
@@ -24,6 +25,6 @@ def fitgamma(datafile, outputdir, nbins):
         pk = pickle.load(fh)
         data = pk["obs"]
         params = pk["params"]
-        gamma = estimate_gamma(data, params["mask"], 
+        gamma = estimate_gamma(data, params["mask"],
                                params["loci"], params["diag"], outputdir, nbins)
         np.savetxt(os.path.join(outputdir, "init_gamma.txt"), gamma)

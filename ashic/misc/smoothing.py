@@ -16,10 +16,10 @@ def mean_filter(mat, mask=None, h=1):
     # !!! do not include lower traingle in window
     indices = np.argwhere(np.triu(mask))
     for i, j in indices:
-        low = max(0, i-h)
-        upper = min(i+h, n-1)
-        left = max(0, j-h)
-        right = min(j+h, n-1)
-        y[i, j] = np.nanmean(x[low:upper+1, left:right+1])
+        low = max(0, i - h)
+        upper = min(i + h, n - 1)
+        left = max(0, j - h)
+        right = min(j + h, n - 1)
+        y[i, j] = np.nanmean(x[low:upper + 1, left:right + 1])
         y[j, i] = y[i, j]
     return y

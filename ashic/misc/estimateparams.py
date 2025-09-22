@@ -2,6 +2,7 @@ import os
 import numpy as np
 from scipy import stats
 import matplotlib as mpl
+
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -13,7 +14,7 @@ from statsmodels.base.model import GenericLikelihoodModel
 def logspace_diagmean(mat, start=1, stop=None, num=100):
     n = mat.shape[0]
     if stop is None:
-        stop = n-1
+        stop = n - 1
     seq = np.unique(np.logspace(np.log10(start), np.log10(stop),
                                 num=num, dtype=int))
     m = seq.shape[0]
@@ -39,8 +40,8 @@ def estimate_alpha(c, d, start, plot=False, savefile=None):
     dmean, seq = diagmean(d, start=start)
     idx = ~np.isnan(dmean)
     # fit relation between d = A1*s^B1
-    p1, _ = curve_fit(lambda s, A, B: A*np.power(s, B),
-              seq[idx], dmean[idx])
+    p1, _ = curve_fit(lambda s, A, B: A * np.power(s, B),
+                      seq[idx], dmean[idx])
     A1, B1 = p1
     if plot:
         fig, axes = plt.subplots(1, 2, figsize=(24, 8))
@@ -52,8 +53,8 @@ def estimate_alpha(c, d, start, plot=False, savefile=None):
     cmean, seq = diagmean(c, start=start)
     idx = ~np.isnan(cmean)
     # fit relation between c = A2*s^B2
-    p2, _ = curve_fit(lambda s, A, B: A*np.power(s, B),
-              seq[idx], cmean[idx])
+    p2, _ = curve_fit(lambda s, A, B: A * np.power(s, B),
+                      seq[idx], cmean[idx])
     A2, B2 = p2
     if plot:
         axes[1].loglog(seq, cmean, label='contact')
@@ -66,7 +67,7 @@ def estimate_alpha(c, d, start, plot=False, savefile=None):
     # c=A2*s^B2
     # c=[A2*A1^(-B2/B1)]*d^(B2/B1)
     # c=beta*d^alpha
-    alpha = B2/B1
+    alpha = B2 / B1
     return alpha
 
 
@@ -101,7 +102,7 @@ class ZeroInflatedPoisson(GenericLikelihoodModel):
             lambda_start = self.endog.sum() * 1. / (self.endog.size * (1 - excess_zeros))
             start_params = np.array([excess_zeros, lambda_start])
         return super(ZeroInflatedPoisson, self).fit(start_params=start_params,
-                                                maxiter=maxiter, maxfun=maxfun, **kwds)
+                                                    maxiter=maxiter, maxfun=maxfun, **kwds)
 
 
 def fit_zip(mat, seq):
@@ -134,8 +135,8 @@ def estimate_gamma(conmat, conpat, start, plot=False, outdir=None):
     for i in range(len(bins) - 1):
         binning.append((bins[i], bins[i + 1] - 1))
     meangammas = [np.nanmean(
-                     np.concatenate((gammas_mat[t[0]-start:t[1]-start+1],
-                                     gammas_pat[t[0]-start:t[1]-start+1]))) for t in binning]
+        np.concatenate((gammas_mat[t[0] - start:t[1] - start + 1],
+                        gammas_pat[t[0] - start:t[1] - start + 1]))) for t in binning]
     meanbinning = [np.nanmean(np.arange(t[0], t[1] + 1)) for t in binning]
     meanbinning = np.append(meanbinning, x.max())
     meangammas = np.append(meangammas, meangammas[-1])
@@ -152,8 +153,8 @@ def estimate_gamma(conmat, conpat, start, plot=False, outdir=None):
         ax.plot(x, newgammas, 'b-', lw=2, label='isotonic regression')
         ax.legend()
         plt.savefig(os.path.join(outdir, 'simulated_gamma.png'))
-    gammas = np.full(n-1, np.nan)
-    gammas[start-1:] = newgammas
+    gammas = np.full(n - 1, np.nan)
+    gammas[start - 1:] = newgammas
     return gammas
 
 

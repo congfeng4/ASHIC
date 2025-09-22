@@ -11,7 +11,9 @@ conda env create -f environment.yml
 ```
 
 ## Citation
-Ye, T., & Ma, W. (2020). ASHIC: hierarchical Bayesian modeling of diploid chromatin contacts and structures. *Nucleic acids research*, 48(21), e123-e123. DOI: https://doi.org/10.1093/nar/gkaa872
+
+Ye, T., & Ma, W. (2020). ASHIC: hierarchical Bayesian modeling of diploid chromatin contacts and structures. *Nucleic
+acids research*, 48(21), e123-e123. DOI: https://doi.org/10.1093/nar/gkaa872
 
 ## Usage
 
@@ -62,14 +64,17 @@ Options:
 
 ### Example
 
-Sample data can be found at `examples/sample_data/GSM2863686_chrX_1000000.pickle`. The data file can be generated with `ashic-data` command.
+Sample data can be found at `examples/sample_data/GSM2863686_chrX_1000000.pickle`. The data file can be generated with
+`ashic-data` command.
 
 Run `ASHIC-ZIPM` model on the example data:
+
 ```bash
 ashic -i examples/sample_data/GSM2863686_chrX_1000000.pickle -o output --model ASHIC-ZIPM
 ```
 
 Run `ASHIC-PM` model on the example data:
+
 ```bash
 ashic -i examples/sample_data/GSM2863686_chrX_1000000.pickle -o output --model ASHIC-PM
 ```
@@ -81,14 +86,18 @@ The `output` directory includes:
 - progress.txt: saved log-likelihood for each iteration
 - log.json: log information about convergence
 - matrices:
-  - t_mm.txt (maternal), t_mp.txt (inter-homologous), t_pp.txt (paternal): diploid contact matrices in text format (shape: n * n)
-  - structure.txt: predicted 3D structure in text format (shape: n * 3)
+    - t_mm.txt (maternal), t_mp.txt (inter-homologous), t_pp.txt (paternal): diploid contact matrices in text format (
+      shape: n * n)
+    - structure.txt: predicted 3D structure in text format (shape: n * 3)
 
 ## Generate input data from mapped read pairs
 
-We use the mapped read pairs file from Bonora et al. (2018) ([GSM2863686](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2863686)) as an example to show the steps to generate ASHIC input data.
+We use the mapped read pairs file from Bonora et al. (
+2018) ([GSM2863686](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2863686)) as an example to show the steps to
+generate ASHIC input data.
 
-The mapped read pairs file should be tab-delimited text format and contains at least the following columns: 
+The mapped read pairs file should be tab-delimited text format and contains at least the following columns:
+
 - chromosome of 1st read end
 - genomic coordinate of 1st read end
 - allele of 1st read end
@@ -96,30 +105,36 @@ The mapped read pairs file should be tab-delimited text format and contains at l
 - genomic coordinate of 2nd read end
 - allele of 2nd read end
 
-The *allele* of each read end should be some tag representing maternal-specific, paternal-specific, and allele-ambiguous reads.
-In the case of the example, we use 'ref' for maternal-specific reads, 'alt' for paternal-specific reads, and 'both-ref' for allele-ambiguous reads. 
+The *allele* of each read end should be some tag representing maternal-specific, paternal-specific, and allele-ambiguous
+reads.
+In the case of the example, we use 'ref' for maternal-specific reads, 'alt' for paternal-specific reads, and 'both-ref'
+for allele-ambiguous reads.
 
 The preprocessing step would be performed using `ashic-data` command.
 
-First, we split the read pairs into allele-certain and allele-ambiguous read pairs per chromosome using `ashic-data split2chrs` command.
+First, we split the read pairs into allele-certain and allele-ambiguous read pairs per chromosome using
+`ashic-data split2chrs` command.
 
 - allele-certain
-  - both-end maternal-specific
-  - both-end paternal-specific
-  - one-end maternal-specific, one-end paternal-specific
+    - both-end maternal-specific
+    - both-end paternal-specific
+    - one-end maternal-specific, one-end paternal-specific
 - allele-ambiguous
-  - one-end maternal-specific, one-end allele-ambiguous
-  - one-end paternal-specific, one-end allele-ambiguous
-  - both-end allele-ambiguous
+    - one-end maternal-specific, one-end allele-ambiguous
+    - one-end paternal-specific, one-end allele-ambiguous
+    - both-end allele-ambiguous
 
 ```
 ashic-data split2chrs --prefix=<PREFIX> <FILENAME> <OUTPUT>
 ```
 
-Replace `<FILENAME>` with the read pairs file name, and `<OUTPUT>` with the destination directory to store split allele-certain and allele-ambiguous read pairs per chromosome.
+Replace `<FILENAME>` with the read pairs file name, and `<OUTPUT>` with the destination directory to store split
+allele-certain and allele-ambiguous read pairs per chromosome.
 Use `<PREFIX>` to specify the prefix of the output files.
 
-If you use input file format different from Bonora et al. (2018), you need to specify the *allele* tags used, and the index (1-based) of each column as listed before. Please refer to the following detailed explanation of options to do so. The default option values are for Bonora et al. (2018) data. 
+If you use input file format different from Bonora et al. (2018), you need to specify the *allele* tags used, and the
+index (1-based) of each column as listed before. Please refer to the following detailed explanation of options to do so.
+The default option values are for Bonora et al. (2018) data.
 
 ```
 > ashic-data split2chrs -h
@@ -161,10 +176,16 @@ Then, bin the split read pairs files of a chromosome into contact matrices at ch
 ashic-data binning --res=<RES> --chrom=<CHROM> <PREFIX> <OUTPUT>
 ```
 
-Replace `<RES>` with the resolution in base pair, `<CHROM>` with chosen chromosome, `<OUTPUT>` with the destination directory to store binned '.npy' matrix files. `<PREFIX>` is the common prefix of the split read pairs files with *directory* included, e.g. `<PREFIX>_chrX_ref_ref` is the file containing both-end maternal-specific read pairs on chrX.
+Replace `<RES>` with the resolution in base pair, `<CHROM>` with chosen chromosome, `<OUTPUT>` with the destination
+directory to store binned '.npy' matrix files. `<PREFIX>` is the common prefix of the split read pairs files with
+*directory* included, e.g. `<PREFIX>_chrX_ref_ref` is the file containing both-end maternal-specific read pairs on chrX.
 
-If you use input file format different from Bonora et al. (2018), you need to specify the *allele* tags used, and the index (1-based) of each column as listed before. If the reads were mapped use reference genome other than 'mm10', a two-column tab-delimited text file ('.chrom.sizes') containing each chromosome name and size in base pair should be provided.
-Please refer to the following detailed explanation of options to do so. The default option values are for Bonora et al. (2018) data.
+If you use input file format different from Bonora et al. (2018), you need to specify the *allele* tags used, and the
+index (1-based) of each column as listed before. If the reads were mapped use reference genome other than 'mm10', a
+two-column tab-delimited text file ('.chrom.sizes') containing each chromosome name and size in base pair should be
+provided.
+Please refer to the following detailed explanation of options to do so. The default option values are for Bonora et
+al. (2018) data.
 
 ```
 > ashic-data binning -h
@@ -208,25 +229,31 @@ Options:
 ```
 
 ### Generate binned matrices from HiC-Pro *validPairs* files
-Another approach to generate mapped allele specific read pairs from raw FASTQ files is to run [HiC-Pro](https://github.com/nservant/HiC-Pro) with [allele specific mode](https://nservant.github.io/HiC-Pro/AS.html).
-It will generate *validPairs* files which contain one additional column with the allele assignment of each read pair. 
-We will generate the binned matrices from HiC-Pro *validPairs* files using the `ashic-data bin-hicpro` command: 
+
+Another approach to generate mapped allele specific read pairs from raw FASTQ files is to
+run [HiC-Pro](https://github.com/nservant/HiC-Pro)
+with [allele specific mode](https://nservant.github.io/HiC-Pro/AS.html).
+It will generate *validPairs* files which contain one additional column with the allele assignment of each read pair.
+We will generate the binned matrices from HiC-Pro *validPairs* files using the `ashic-data bin-hicpro` command:
 
 ```
 ashic-data bin-hicpro <VALIDPAIRS> <OUTPUT> --res=<RES> --region=<REGION> --genome=<CHROM.SIZES>
 ```
 
-`ashic-data bin-hicpro` has two arguments: 
-- `<VALIDPAIRS>`: path to the HiC-Pro *validPairs* file 
+`ashic-data bin-hicpro` has two arguments:
+
+- `<VALIDPAIRS>`: path to the HiC-Pro *validPairs* file
 - `<OUTPUT>`: output directory to store binned matrices
 
 And three required options:
+
 - `--res=<RES>`: resolution of binned matrices in base-pair
-- `--region=<REGION>`: chromosomes(s) or region(s) to generate the binned matrices e.g. `chr1` or `chr1:1000000-5000000`, if multiple regions, separate each region with comma `,`
+- `--region=<REGION>`: chromosomes(s) or region(s) to generate the binned matrices e.g. `chr1` or
+  `chr1:1000000-5000000`, if multiple regions, separate each region with comma `,`
 - `--genome=<CHROM.SIZES>`: path to the `chrom.sizes` file that specify the chromosome lengths for a given genome
 
 The default values for other options are consistent with HiC-Pro *validPairs* file format.
-Please refer to the full description of each option below: 
+Please refer to the full description of each option below:
 
 ```
 > ashic-data bin-hicpro -h
@@ -259,16 +286,18 @@ Options:
   -h, --help     Show this message and exit.
 ```
 
-
 ### Pack binned matrices into ASHIC input data
 
-Finally, we pack the binned matrices into pickle data with some essential parameters (length of chromosome, distance decay exponent, etc.) and filter low mappability loci.
+Finally, we pack the binned matrices into pickle data with some essential parameters (length of chromosome, distance
+decay exponent, etc.) and filter low mappability loci.
 The output pickle data can be used as input for ASHIC.
 
 ```
 ashic-data pack --perc=<PERC> <INPUT> <OUTPUT>
 ```
-Replace `<INPUT>` with the *directory* containing the binned '.npy' matrix files of a chromosome, and `<OUTPUT>` with the destination directory to store the pickle data. 
+
+Replace `<INPUT>` with the *directory* containing the binned '.npy' matrix files of a chromosome, and `<OUTPUT>` with
+the destination directory to store the pickle data.
 Use `<PERC>` to specify the percentage of rows or columns have the lowest contacts to filter out.
 
 Specify the *allele* tags if different from the example.
