@@ -44,7 +44,11 @@ def run_ashic(inputfile, outputdir, model_type,
     if not os.path.exists(outputdir):
         os.makedirs(outputdir)
     with open(inputfile, 'rb') as fh:
-        pk = pickle.load(fh)
+        # Using encoding='latin1' is required for unpickling NumPy arrays and instances of datetime, date and time pickled by Python 2.
+        try:
+            pk = pickle.load(fh, encoding='latin1') # inputfile is py3
+        except pickle.UnpicklingError:
+            pk = pickle.load(fh, encoding='latin1') # inputfile is py2
         data = pk['obs']
         params = pk['params']
     # initialize allele-specific contact by treat allele-certain as the Poisson lambda

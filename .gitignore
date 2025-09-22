@@ -4,3 +4,4 @@
 ashic/examples/
 *.py.bak
 .idea
+logs

@@ -1,5 +1,5 @@
 from scipy.stats import poisson
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 from sklearn.metrics import euclidean_distances
 import itertools
 import numpy as np
